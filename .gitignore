@@ -1,1 +1,9 @@
 ﻿/.vs
+
+/DotMemoryExplorer.Core/bin
+/DotMemoryExplorer.Core/obj
+
+/DotMemoryExplorer.Gui/bin
+/DotMemoryExplorer.Gui/obj
+
+*.user
