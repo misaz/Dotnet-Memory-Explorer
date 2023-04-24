@@ -5,8 +5,29 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DotMemoryExplorer.Gui"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
+        Title="Dotnet Memory Explorer" Height="450" Width="800">
+    <TabControl ItemsSource="{Binding Tabs}">
+        <TabControl.Resources>
+            <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
+        </TabControl.Resources>
+        <TabControl.ItemTemplate>
+            <DataTemplate>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
+                    <Label Content="{Binding Name}" />
+                    <Grid Grid.Column="1" Width="20" Height="20">
+                        <Button VerticalAlignment="Center" Visibility="{Binding CanClose, Converter={StaticResource booleanToVisibilityConverter}}">X</Button>
+                    </Grid>
+                </Grid>
+            </DataTemplate>
+        </TabControl.ItemTemplate>
+        <TabControl.ContentTemplate>
+            <DataTemplate>
+                <UserControl Content="{Binding Content}"></UserControl>
+            </DataTemplate>
+        </TabControl.ContentTemplate>
+    </TabControl>
 </Window>

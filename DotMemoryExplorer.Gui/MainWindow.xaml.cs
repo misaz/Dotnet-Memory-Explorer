@@ -18,8 +18,13 @@ namespace DotMemoryExplorer.Gui {
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
 	public partial class MainWindow : Window {
+
+		private ApplicationManager _appManager = new ApplicationManager();
+
 		public MainWindow() {
+			this.DataContext = _appManager;
 			InitializeComponent();
 		}
+
 	}
 }
