@@ -14,6 +14,7 @@ namespace DotMemoryExplorer.Core {
 	/// </summary>
 	public interface IDotnetProcess : INotifyPropertyChanged {
 		public int Pid { get; }
+		public string Name { get; }
 
 		/// <summary>
 		/// Indication that process can be dumped by MakeDump()

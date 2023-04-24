@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace DotMemoryExplorer.Core {
 	public class LiveDotnetProcess : IDotnetProcess, IDisposable {
-
 		private int _pid;
 		private bool _canDump;
 		private Process _process;
@@ -26,6 +25,12 @@ namespace DotMemoryExplorer.Core {
 		public int Pid {
 			get {
 				return _pid;
+			}
+		}
+
+		public string Name {
+			get {
+				return _process.ProcessName;
 			}
 		}
 
@@ -47,6 +52,7 @@ namespace DotMemoryExplorer.Core {
 				_dumperFactory = value;
 			}
 		}
+
 
 		public LiveDotnetProcess(int pid) {
 			try {
