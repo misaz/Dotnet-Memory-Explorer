@@ -35,7 +35,9 @@ namespace DotMemoryExplorer.Gui {
 		}
 
 		public void Execute(object? parameter) {
-			_applicationManager.CloseTab(_applicationManager.SelectedTab);
+			if (_applicationManager.SelectedTab != null) {
+				_applicationManager.CloseTab(_applicationManager.SelectedTab);
+			}
 		}
 
 		private void RaiseCanExecuteChanged(string v) {

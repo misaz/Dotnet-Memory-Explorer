@@ -10,7 +10,7 @@ namespace DotMemoryExplorer.Gui {
 
 		private readonly ApplicationManager _manager;
 
-		public OverviewTab(ApplicationManager applicationManager) : base("Overview", new OverviewPane(), false) {
+		public OverviewTab(ApplicationManager applicationManager) : base("Overview", new OverviewPane(applicationManager), false) {
 			this._manager = applicationManager;
 		}
 
