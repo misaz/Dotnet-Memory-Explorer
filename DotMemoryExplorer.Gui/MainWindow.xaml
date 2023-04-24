@@ -6,28 +6,46 @@
         xmlns:local="clr-namespace:DotMemoryExplorer.Gui"
         mc:Ignorable="d"
         Title="Dotnet Memory Explorer" Height="450" Width="800">
-    <TabControl ItemsSource="{Binding Tabs}">
-        <TabControl.Resources>
-            <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
-        </TabControl.Resources>
-        <TabControl.ItemTemplate>
-            <DataTemplate>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto" />
-                        <ColumnDefinition Width="auto" />
-                    </Grid.ColumnDefinitions>
-                    <Label Content="{Binding Name}" />
-                    <Grid Grid.Column="1" Width="20" Height="20">
-                        <Button VerticalAlignment="Center" Visibility="{Binding CanClose, Converter={StaticResource booleanToVisibilityConverter}}">X</Button>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="Start Process" Command="{Binding StartProcessCommand}"></MenuItem>
+                <MenuItem Header="Attach to Process" Command="{Binding AttachToProcessCommand}"></MenuItem>
+                <Separator />
+                <MenuItem Header="Close active tab" Command="{Binding CloseTabCommand}"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Search">
+                <MenuItem Header="Search Data Type"></MenuItem>
+                <Separator />
+                <MenuItem Header="Search String"></MenuItem>
+                <MenuItem Header="Search Binary Data"></MenuItem>
+                <MenuItem Header="Search Guid"></MenuItem>
+                <MenuItem Header="Search Numerics"></MenuItem>
+            </MenuItem>
+        </Menu>
+        <TabControl ItemsSource="{Binding Tabs}" SelectedItem="{Binding SelectedTab, Mode=TwoWay}">
+            <TabControl.Resources>
+                <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
+            </TabControl.Resources>
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+                        <Label Content="{Binding Name}" />
+                        <Grid Grid.Column="1" Width="20" Height="20">
+                            <Button VerticalAlignment="Center" Visibility="{Binding CanClose, Converter={StaticResource booleanToVisibilityConverter}}" Click="CloseSenderTagTab" Tag="{Binding .}">X</Button>
+                        </Grid>
                     </Grid>
-                </Grid>
-            </DataTemplate>
-        </TabControl.ItemTemplate>
-        <TabControl.ContentTemplate>
-            <DataTemplate>
-                <UserControl Content="{Binding Content}"></UserControl>
-            </DataTemplate>
-        </TabControl.ContentTemplate>
-    </TabControl>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <UserControl Content="{Binding Content}"></UserControl>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
+    </DockPanel>
 </Window>

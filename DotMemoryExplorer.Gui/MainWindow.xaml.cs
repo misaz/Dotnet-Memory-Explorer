@@ -26,5 +26,12 @@ namespace DotMemoryExplorer.Gui {
 			InitializeComponent();
 		}
 
+		/// <summary>
+		/// This is event handler used in close button of each tab. Tab instance has to bind into Tag property of button firing this event.
+		/// </summary>
+		private void CloseSenderTagTab(object sender, RoutedEventArgs e) {
+			_appManager.CloseTab((Tab)((Button)sender).Tag);
+		}
+
 	}
 }
