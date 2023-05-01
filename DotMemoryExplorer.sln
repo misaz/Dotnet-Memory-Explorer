@@ -3,24 +3,44 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotMemoryExplorer.Core", "DotMemoryExplorer.Core\DotMemoryExplorer.Core.csproj", "{DE025AFD-4A0C-4D35-9D38-960C4C19E0D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotMemoryExplorer.Core", "DotMemoryExplorer.Core\DotMemoryExplorer.Core.csproj", "{DE025AFD-4A0C-4D35-9D38-960C4C19E0D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotMemoryExplorer.Gui", "DotMemoryExplorer.Gui\DotMemoryExplorer.Gui.csproj", "{2604BB89-E687-4C84-9EE7-70650C9A988F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotMemoryExplorer.Gui", "DotMemoryExplorer.Gui\DotMemoryExplorer.Gui.csproj", "{2604BB89-E687-4C84-9EE7-70650C9A988F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotMemoryExplorer.DebugeeWpf", "DotMemoryExplorer.DebugeeWpf\DotMemoryExplorer.DebugeeWpf.csproj", "{61C1B1A6-35DD-4472-BC64-11D632CFAC65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{DE025AFD-4A0C-4D35-9D38-960C4C19E0D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DE025AFD-4A0C-4D35-9D38-960C4C19E0D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE025AFD-4A0C-4D35-9D38-960C4C19E0D1}.Debug|x64.ActiveCfg = Debug|x64
+		{DE025AFD-4A0C-4D35-9D38-960C4C19E0D1}.Debug|x64.Build.0 = Debug|x64
 		{DE025AFD-4A0C-4D35-9D38-960C4C19E0D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE025AFD-4A0C-4D35-9D38-960C4C19E0D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE025AFD-4A0C-4D35-9D38-960C4C19E0D1}.Release|x64.ActiveCfg = Release|x64
+		{DE025AFD-4A0C-4D35-9D38-960C4C19E0D1}.Release|x64.Build.0 = Release|x64
 		{2604BB89-E687-4C84-9EE7-70650C9A988F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2604BB89-E687-4C84-9EE7-70650C9A988F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2604BB89-E687-4C84-9EE7-70650C9A988F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2604BB89-E687-4C84-9EE7-70650C9A988F}.Debug|x64.Build.0 = Debug|Any CPU
 		{2604BB89-E687-4C84-9EE7-70650C9A988F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2604BB89-E687-4C84-9EE7-70650C9A988F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2604BB89-E687-4C84-9EE7-70650C9A988F}.Release|x64.ActiveCfg = Release|Any CPU
+		{2604BB89-E687-4C84-9EE7-70650C9A988F}.Release|x64.Build.0 = Release|Any CPU
+		{61C1B1A6-35DD-4472-BC64-11D632CFAC65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61C1B1A6-35DD-4472-BC64-11D632CFAC65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61C1B1A6-35DD-4472-BC64-11D632CFAC65}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{61C1B1A6-35DD-4472-BC64-11D632CFAC65}.Debug|x64.Build.0 = Debug|Any CPU
+		{61C1B1A6-35DD-4472-BC64-11D632CFAC65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61C1B1A6-35DD-4472-BC64-11D632CFAC65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61C1B1A6-35DD-4472-BC64-11D632CFAC65}.Release|x64.ActiveCfg = Release|Any CPU
+		{61C1B1A6-35DD-4472-BC64-11D632CFAC65}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

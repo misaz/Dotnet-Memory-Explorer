@@ -6,4 +6,7 @@
 /DotMemoryExplorer.Gui/bin
 /DotMemoryExplorer.Gui/obj
 
+/DotMemoryExplorer.DebugeeWpf/bin
+/DotMemoryExplorer.DebugeeWpf/obj
+
 *.user
