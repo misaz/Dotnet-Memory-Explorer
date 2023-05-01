@@ -13,6 +13,7 @@ namespace DotMemoryExplorer.Core {
 		private Process _process;
 		private List<HeapDump> _dumps = new List<HeapDump>();
 		private IHeapDumperFactory _dumperFactory;
+		private IProcessMemoryManger _memoryManger;
 
 		public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -53,6 +54,11 @@ namespace DotMemoryExplorer.Core {
 			}
 		}
 
+		public IProcessMemoryManger ProcessMemoryManger {
+			get {
+				return _memoryManger;
+			}
+		}
 
 		public LiveDotnetProcess(int pid) {
 			try {
@@ -67,6 +73,7 @@ namespace DotMemoryExplorer.Core {
 			}
 
 			_pid = pid;
+			_memoryManger = new WindowsProcessMemoryManger(_process);
 
 			// EtwHeapDumper is default strategy for dumping process. User can change it by writing DumperFactory property.
 			_dumperFactory = new EtwHeapDumperFactory(this);

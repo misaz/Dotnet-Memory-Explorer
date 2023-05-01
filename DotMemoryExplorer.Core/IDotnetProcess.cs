@@ -16,6 +16,8 @@ namespace DotMemoryExplorer.Core {
 		public int Pid { get; }
 		public string Name { get; }
 
+		public IProcessMemoryManger ProcessMemoryManger { get; }
+
 		/// <summary>
 		/// Indication that process can be dumped by MakeDump()
 		/// </summary>

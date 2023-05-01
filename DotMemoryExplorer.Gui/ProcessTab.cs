@@ -6,7 +6,7 @@ namespace DotMemoryExplorer.Gui {
 
 		private readonly IDotnetProcess _process;
 
-		public ProcessTab(IDotnetProcess process) : base($"Process {process.Pid} ({process.Name})", new Button()) { 
+		public ProcessTab(IDotnetProcess process, ApplicationManager appManager) : base($"Process {process.Pid} ({process.Name})", new ProcessPane(process, appManager)) { 
 			this._process = process;
 		}
 	}

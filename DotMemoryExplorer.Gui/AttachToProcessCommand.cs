@@ -33,7 +33,7 @@ namespace DotMemoryExplorer.Gui {
 					return;
 				}
 
-				var tab = new ProcessTab(process);
+				var tab = new ProcessTab(process, _applicationManager);
 
 				_applicationManager.AddTab(tab);
 			}
