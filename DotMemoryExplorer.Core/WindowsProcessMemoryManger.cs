@@ -12,7 +12,7 @@ using Windows.Win32.System.Memory;
 namespace DotMemoryExplorer.Core {
 	public class WindowsProcessMemoryManger : IMemoryDumper, IProcessMemoryManger {
 
-		public Process _proc;
+		private readonly Process _proc;
 
 		public WindowsProcessMemoryManger(Process proc) {
 			if (proc == null) {
@@ -20,6 +20,22 @@ namespace DotMemoryExplorer.Core {
 			}
 
 			_proc = proc;
+		}
+
+		public unsafe ReadOnlySpan<byte> GetMemory(ulong address, ulong size) {
+			AssureUnmanagedBufferCapacity((nuint)size);
+
+			nuint read;
+			PInvoke.ReadProcessMemory(_proc.SafeHandle, (void*)address, (void*)buffer, (nuint)size, &read);
+
+			if (size > int.MaxValue) {
+				throw new Exception("Unable to read memory because request size is too large.");
+			}
+
+			byte[] managedBuffer = new byte[size];
+			Marshal.Copy(buffer, managedBuffer, 0, (int)size);
+
+			return new ReadOnlySpan<byte>(managedBuffer);
 		}
 
 		/// <summary>
@@ -70,8 +86,6 @@ namespace DotMemoryExplorer.Core {
 			IEnumerable<MemoryAddressRange> regionsAddresses = GetMemoryRegions();
 			List<MemoryRegion> regions = new List<MemoryRegion>(regionsAddresses.Count());
 
-			IntPtr buffer = IntPtr.Zero;
-			nuint bufferSize = 0;
 
 			foreach (var region in regionsAddresses) {
 				// dump only private commited memory
@@ -79,18 +93,7 @@ namespace DotMemoryExplorer.Core {
 					continue;
 				}
 
-				if (region.Size > bufferSize) {
-					if (buffer != 0) {
-						Marshal.FreeHGlobal(buffer);
-					}
-
-					if (region.Size > int.MaxValue) {
-						throw new Exception($"Unable to make memry dump because some region is larger than {int.MaxValue} bytes.");
-					}
-
-					buffer = Marshal.AllocHGlobal((int)region.Size);
-					bufferSize = (nuint)region.Size;
-				}
+				AssureUnmanagedBufferCapacity((nuint)region.Size);
 
 				nuint read;
 				PInvoke.ReadProcessMemory(p, (void*)region.Address, (void*)buffer, (nuint)region.Size, &read);
@@ -104,5 +107,32 @@ namespace DotMemoryExplorer.Core {
 			return new MemoryDump(regions);
 		}
 
+
+		private IntPtr buffer = IntPtr.Zero;
+		private nuint bufferSize = 0;
+
+		private void AssureUnmanagedBufferCapacity(nuint requestedCapacity) {
+			if (requestedCapacity > bufferSize) {
+				// free old insufficient buffer
+				if (buffer != 0) {
+					Marshal.FreeHGlobal(buffer);
+				}
+
+				if (requestedCapacity > int.MaxValue) {
+					throw new Exception($"Unable to make memry dump because some region is larger than {int.MaxValue} bytes.");
+				}
+
+				buffer = Marshal.AllocHGlobal((int)requestedCapacity);
+				bufferSize = (nuint)requestedCapacity;
+			}
+		}
+
+		public void Dispose() {
+			if (buffer != 0) {
+				Marshal.FreeHGlobal(buffer);
+				buffer = 0;
+				bufferSize = 0;
+			}
+		}
 	}
 }

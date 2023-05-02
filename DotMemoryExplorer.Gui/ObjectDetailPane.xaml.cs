@@ -20,8 +20,11 @@ namespace DotMemoryExplorer.Gui {
 	/// </summary>
 	public partial class ObjectDetailPane : UserControl {
 
+		private ObjectDetailProvider _objectDetailProvider;
 		private Lazy<string> _typeNameLazy;
 		private Lazy<string> _objectBinaryContentLazy;
+		private Lazy<ulong> _eeClassAddressLazy;
+		private Lazy<IEnumerable<FieldMetadata>> _objectFieldsLazy;
 
 		public HeapDump OwningHeapDump { get; }
 		public DotnetObjectMetadata Metadata { get; }
@@ -38,9 +41,21 @@ namespace DotMemoryExplorer.Gui {
 			}
 		}
 
+		public ulong EEClassAddress {
+			get {
+				return _eeClassAddressLazy.Value;
+			}
+		}
+
 		public string BinaryContentFormatted {
 			get {
 				return _objectBinaryContentLazy.Value;
+			}
+		}
+
+		public IEnumerable<FieldMetadata> Fields {
+			get {
+				return _objectFieldsLazy.Value;
 			}
 		}
 
@@ -55,11 +70,22 @@ namespace DotMemoryExplorer.Gui {
 
 			_typeNameLazy = new Lazy<string>(ResolveTypeName);
 			_objectBinaryContentLazy = new Lazy<string>(FormatBinaryContent);
+			_eeClassAddressLazy = new Lazy<ulong>(ReadEEClassAddress);
+			_objectFieldsLazy = new Lazy<IEnumerable<FieldMetadata>>(ReadObjectFields);
+			_objectDetailProvider = new ObjectDetailProvider(objMetadata, owningHeapDump);
 			Metadata = objMetadata;
 			OwningHeapDump = owningHeapDump;
 
 			DataContext = this;
 			InitializeComponent();
+		}
+
+		private IEnumerable<FieldMetadata> ReadObjectFields() {
+			return _objectDetailProvider.GetFields();
+		}
+
+		private ulong ReadEEClassAddress() {
+			return _objectDetailProvider.GetEEClassAddress();
 		}
 
 		private string ResolveTypeName() {

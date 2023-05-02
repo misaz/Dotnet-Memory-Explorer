@@ -5,10 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DotMemoryExplorer.Gui"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800" x:Name="userControl">
     <Grid>
         <Grid.Resources>
             <local:HexadecimalAddressConverter x:Key="hexadecimalAddressConverter" />
+            <local:TypeIdToNameConverter x:Key="typeIdToNameConverter" />
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
@@ -39,13 +40,21 @@
             <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Metadata.Address,Converter={StaticResource hexadecimalAddressConverter}}" />
             <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding ObjectHeader,Converter={StaticResource hexadecimalAddressConverter}}" />
             <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding MethodTableAddress,Converter={StaticResource hexadecimalAddressConverter}}" />
-            <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding EEClassAddress,Converter={StaticResource hexadecimalAddressConverter}}" />
+            <TextBlock Grid.Column="1" Grid.Row="4" Text="{Binding EEClassAddress ,Converter={StaticResource hexadecimalAddressConverter}}" />
         </Grid>
         <TabControl Grid.Row="1" Margin="10,0,10,10">
             <TabItem Header="Content">
-                <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding ContentFields}" IsReadOnly="True">
+                <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Fields}" IsReadOnly="True">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Width="200" Header="Field Name" />
+                        <DataGridTextColumn Width="50" Header="Offset" Binding="{Binding Offset}" />
+                        <DataGridTextColumn Width="300" Header="Owning Class">
+                            <DataGridTextColumn.Binding>
+                                <MultiBinding Converter="{StaticResource typeIdToNameConverter}">
+                                    <Binding Path="OwnerTypeId" />
+                                    <Binding Path="OwningHeapDump" ElementName="userControl" />
+                                </MultiBinding>
+                            </DataGridTextColumn.Binding>
+                        </DataGridTextColumn>
                         <DataGridTextColumn Width="300" Header="Value" />
                     </DataGrid.Columns>
                 </DataGrid>

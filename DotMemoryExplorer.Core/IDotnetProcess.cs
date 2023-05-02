@@ -24,6 +24,7 @@ namespace DotMemoryExplorer.Core {
 		public bool CanDump { get; }
 
 		public IEnumerable<HeapDump> AvalaibleDumps { get; }
+		int Bitness { get; }
 
 		public HeapDump MakeDump();
 	}
