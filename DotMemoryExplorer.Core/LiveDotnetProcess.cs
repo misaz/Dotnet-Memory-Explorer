@@ -101,6 +101,10 @@ namespace DotMemoryExplorer.Core {
 			}
 		}
 
+		public override string ToString() {
+			return $"{Name} (PID: {Pid})";
+		}
+
 		public void Dispose() {
 			_process.Exited -= process_Exited;
 		}

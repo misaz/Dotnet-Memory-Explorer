@@ -85,11 +85,15 @@ namespace DotMemoryExplorer.Core {
 				return true;
 			}
 
-			if (ContainsAddres(otherRegion.Address) || ContainsAddres(otherRegion.AddressEnd)) {
+			if (Size == 0 || otherRegion.Size == 0) {
+				return false;
+			}
+
+			if (ContainsAddres(otherRegion.Address) || ContainsAddres(otherRegion.AddressEnd - 1)) {
 				return true;
 			}
 
-			if (otherRegion.Address < this.Address && otherRegion.AddressEnd > this.AddressEnd) {
+			if (otherRegion.Address <= this.Address && otherRegion.AddressEnd >= this.AddressEnd) {
 				return true;
 			}
 

@@ -74,6 +74,10 @@ namespace DotMemoryExplorer.Core {
 			nuint bufferSize = 0;
 
 			foreach (var region in regionsAddresses) {
+				// dump only private commited memory
+				if (region.Type != WindowsMemoryType.Private || region.State != WindowsMemoryState.Commit) {
+					continue;
+				}
 
 				if (region.Size > bufferSize) {
 					if (buffer != 0) {
@@ -94,7 +98,7 @@ namespace DotMemoryExplorer.Core {
 				byte[] managedBuffer = new byte[region.Size];
 				Marshal.Copy(buffer, managedBuffer, 0, (int)region.Size);
 
-				regions.Add(new MemoryRegion((ulong)region.Size, managedBuffer));
+				regions.Add(new MemoryRegion((ulong)region.Address, managedBuffer));
 			}
 
 			return new MemoryDump(regions);

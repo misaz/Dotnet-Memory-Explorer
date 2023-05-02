@@ -50,6 +50,8 @@ namespace DotMemoryExplorer.Gui {
 		}
 
 		private void DumpHeap_Click(object sender, RoutedEventArgs e) {
+			var dump = _process.MakeDump();
+			_appManager.AddTab(new HeapDumpTab(_process.AvalaibleDumps.Count(), dump));
 		}
 	}
 }
