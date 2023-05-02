@@ -42,6 +42,24 @@
         </Grid>
         <TabControl Grid.Row="1" Margin="10,0,10,10">
             <TabItem Header="Data Types">
+                <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding HeapDump.DataTypeObjectGrouping.Statistics}" IsReadOnly="True">
+                    <DataGrid.Resources>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="Tag" Value="{Binding .}" />
+                            <EventSetter Event="MouseDoubleClick" Handler="DataType_DoubleClick"/>
+                        </Style>
+                    </DataGrid.Resources>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Width="550" Header="Type Name" Binding="{Binding Type.TypeName}" />
+                        <DataGridTextColumn Width="100" Header="Objects count" Binding="{Binding ObjectsCount}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="TextAlignment" Value="Right" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
             </TabItem>
             <TabItem Header="Stack referenced objects">
             </TabItem>

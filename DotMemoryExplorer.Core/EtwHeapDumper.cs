@@ -2,6 +2,7 @@
 using Microsoft.Diagnostics.Tracing;
 using Microsoft.Diagnostics.Tracing.Parsers;
 using Microsoft.Diagnostics.Tracing.Parsers.Clr;
+using System.Diagnostics;
 using System.Diagnostics.Tracing;
 
 namespace DotMemoryExplorer.Core {
@@ -133,6 +134,7 @@ namespace DotMemoryExplorer.Core {
 				return;
 			}
 
+			_eventSource.StopProcessing();
 			_isGcInProgress = false;
 			_isDumpCompleted = true;
 			_creationCompleted = DateTime.Now;
@@ -164,7 +166,6 @@ namespace DotMemoryExplorer.Core {
 		}
 
 		public void Dispose() {
-			_readerTask?.Dispose();
 			_eventSession?.Dispose();
 			_eventSource?.Dispose();
 		}

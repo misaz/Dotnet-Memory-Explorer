@@ -1,11 +1,17 @@
 ﻿namespace DotMemoryExplorer.Core {
-	public class DotnetTypeMetadata {
-		private ulong typeID;
-		private string typeName;
+	public struct DotnetTypeMetadata {
+		public ulong TypeId { get; }
+		public string TypeName { get; }
 
-		public DotnetTypeMetadata(ulong typeID, string typeName) {
-			this.typeID = typeID;
-			this.typeName = typeName;
+		public DotnetTypeMetadata(ulong typeId, string typeName) {
+			this.TypeId = typeId;
+			this.TypeName = typeName;
 		}
+
+		public DotnetTypeMetadata(ulong typeId) {
+			this.TypeId = typeId;
+			this.TypeName = $"0x{typeId.ToString("16X")}";
+		}
+
 	}
 }

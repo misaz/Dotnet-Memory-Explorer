@@ -18,7 +18,7 @@
         <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Left" Margin="10">
             <Button Width="80" Click="DumpHeap_Click">Dump Heap</Button>
         </StackPanel>
-        
+
         <TextBlock Margin="10,0,0,0" Grid.Row="2">Memory regions:</TextBlock>
         <DataGrid Margin="10,10,10,10" AutoGenerateColumns="False" Grid.Row="3" ItemsSource="{Binding ProcessMappedMemoryRegions}">
             <DataGrid.Resources>

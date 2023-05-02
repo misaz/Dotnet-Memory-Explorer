@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DotMemoryExplorer.Gui;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -8,10 +9,25 @@ using System.Threading.Tasks;
 namespace DotMemoryExplorer.Core {
 	public class HeapDump {
 
+		private SortedDictionary<ulong, DotnetObjectMetadata> _addressToObjects;
+		private SortedDictionary<ulong, DotnetTypeMetadata> _typeIdToType;
+
 		public MemoryDump MemoryDump { get; }
 
-		public IEnumerable<DotnetObjectMetadata> Objects { get; }
-		public IEnumerable<DotnetTypeMetadata> Types { get; }
+		public IEnumerable<DotnetObjectMetadata> Objects {
+			get {
+				return _addressToObjects.Values;
+			}
+		}
+
+		public IEnumerable<DotnetTypeMetadata> Types {
+			get {
+				return _typeIdToType.Values;
+			}
+		}
+
+		public DataTypeObjectGrouping DataTypeObjectGrouping { get; }
+
 		public IDotnetProcess OwningProcess { get; }
 
 		// TODO throw if accessed when _areTimeMarksSet == false
@@ -25,11 +41,29 @@ namespace DotMemoryExplorer.Core {
 		public int ReferencesCount { get; private set; }
 		private bool _areStatisticsSet = false;
 
-		public HeapDump(MemoryDump memory, IEnumerable<DotnetObjectMetadata> objects, IEnumerable<DotnetTypeMetadata> types, IDotnetProcess owningProcess) {
+		public HeapDump(MemoryDump memory, SortedDictionary<ulong, DotnetObjectMetadata> addressToObjects, SortedDictionary<ulong, DotnetTypeMetadata> typeIdToType, IDotnetProcess owningProcess) {
+			if (memory == null) {
+				throw new ArgumentNullException(nameof(memory));
+			}
+
+			if (addressToObjects == null) {
+				throw new ArgumentNullException(nameof(addressToObjects));
+			}
+
+			if (typeIdToType == null) {
+				throw new ArgumentNullException(nameof(typeIdToType));
+			}
+
+			if (owningProcess == null) {
+				throw new ArgumentNullException(nameof(owningProcess));
+			}
+
+			_addressToObjects = addressToObjects;
+			_typeIdToType = typeIdToType;
+
 			MemoryDump = memory;
-			Objects = objects;
-			Types = types;
 			OwningProcess = owningProcess;
+			DataTypeObjectGrouping = new DataTypeObjectGrouping(_addressToObjects, _typeIdToType);
 		}
 
 		public void SetTimeMarks(DateTime creationStarted, DateTime creationCompleted, DateTime processingCompleted) {
@@ -61,5 +95,14 @@ namespace DotMemoryExplorer.Core {
 			ObjectsCount = objectsCount;
 			ReferencesCount = referencesCount;
 		}
+
+		public DotnetTypeMetadata GetTypeById(ulong typeId) {
+			if (_typeIdToType.ContainsKey(typeId)) {
+				return _typeIdToType[typeId];
+			} else {
+				return new DotnetTypeMetadata(typeId);
+			}
+		}
+
 	}
 }

@@ -8,13 +8,10 @@ namespace DotMemoryExplorer.Core {
 
 	public struct DotnetObjectMetadata {
 
-		public ulong TypeId;
-
-		public ulong Address;
-
-		public DotnetReferenceMetadata[] References;
-
-		public List<DotnetReferenceMetadata> ReferencedBy;
+		public ulong TypeId { get; }
+		public ulong Address { get; }
+		public DotnetReferenceMetadata[] References { get; }
+		public List<DotnetReferenceMetadata> ReferencedBy { get; }
 
 		public DotnetObjectMetadata(ulong typeId, ulong address, DotnetReferenceMetadata[] references) {
 			TypeId = typeId;

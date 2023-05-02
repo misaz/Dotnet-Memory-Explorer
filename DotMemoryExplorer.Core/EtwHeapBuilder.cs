@@ -57,7 +57,7 @@ namespace DotMemoryExplorer.Core {
 			ProcessBulkTypes();
 			_isBuilt = true;
 
-			return new HeapDump(_memoryDump, _addressToObject.Values, _typeIdToType.Values, _owningProcess);
+			return new HeapDump(_memoryDump, _addressToObject, _typeIdToType, _owningProcess);
 		}
 
 		private unsafe void ProcessBulkNodes() {
@@ -92,7 +92,9 @@ namespace DotMemoryExplorer.Core {
 
 		private void ProcessType(GCBulkTypeValues type) {
 			var ti = new DotnetTypeMetadata(type.TypeID, type.TypeName);
-			_typeIdToType.Add(type.TypeID, ti);
+			if (!_typeIdToType.ContainsKey(type.TypeID)) {
+				_typeIdToType.Add(type.TypeID, ti);
+			}
 		}
 	}
 }
