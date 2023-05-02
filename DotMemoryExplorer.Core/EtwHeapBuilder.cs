@@ -77,7 +77,7 @@ namespace DotMemoryExplorer.Core {
 				objectReferences[j] = _edgesQueue.GetNextReference();
 			}
 
-			var inst = new DotnetObjectMetadata(node->TypeID, node->Address, objectReferences);
+			var inst = new DotnetObjectMetadata(node->TypeID, node->Address, node->Size, objectReferences);
 
 			_addressToObject.Add(inst.Address, inst);
 		}

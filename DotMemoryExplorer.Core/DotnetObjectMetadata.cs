@@ -10,12 +10,14 @@ namespace DotMemoryExplorer.Core {
 
 		public ulong TypeId { get; }
 		public ulong Address { get; }
+		public ulong Size { get; }
 		public DotnetReferenceMetadata[] References { get; }
 		public List<DotnetReferenceMetadata> ReferencedBy { get; }
 
-		public DotnetObjectMetadata(ulong typeId, ulong address, DotnetReferenceMetadata[] references) {
+		public DotnetObjectMetadata(ulong typeId, ulong address, ulong size, DotnetReferenceMetadata[] references) {
 			TypeId = typeId;
 			Address = address;
+			Size = size;
 			References = references;
 			ReferencedBy = new List<DotnetReferenceMetadata>();
 		}

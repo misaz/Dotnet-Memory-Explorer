@@ -11,6 +11,7 @@
             <local:TypeIdToNameConverter x:Key="typeIdToNameConverter" />
             <local:HexadecimalAddressConverter x:Key="hexadecimalAddressConverter" />
             <Style TargetType="DataGridRow">
+                <Setter Property="Tag" Value="{Binding .}" />
                 <EventSetter Event="MouseDoubleClick" Handler="Object_DoubleClick" />
             </Style>
         </DataGrid.Resources>

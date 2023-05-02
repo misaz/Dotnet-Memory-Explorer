@@ -20,6 +20,7 @@ namespace DotMemoryExplorer.Gui {
 	/// </summary>
 	public partial class ObjectsListingPane : UserControl {
 
+		private readonly ApplicationManager _applicationManager;
 		private IEnumerable<DotnetObjectMetadata> _objects;
 
 		public IEnumerable<DotnetObjectMetadata> Objects {
@@ -44,6 +45,7 @@ namespace DotMemoryExplorer.Gui {
 			}
 
 			_objects = objects;
+			_applicationManager = appManager;
 			HeapDump = heapDump;
 
 			DataContext = this;
@@ -51,7 +53,20 @@ namespace DotMemoryExplorer.Gui {
 		}
 
 		private void Object_DoubleClick(object sender, MouseButtonEventArgs e) {
+			if (sender is not Control) {
+				throw new Exception("Cannot handle event because it is triggered by non-control.");
+			}
 
+			Control c = (Control)sender;
+
+			if (c.Tag is not DotnetObjectMetadata) {
+				throw new Exception("Cannot handle because tag of firing control is not set to object metadata.");
+			}
+
+			DotnetObjectMetadata metadata = (DotnetObjectMetadata)c.Tag;
+
+			var objDetailTab = new ObjectDetailTab(metadata, HeapDump, _applicationManager);
+			_applicationManager.AddTab(objDetailTab);
         }
     }
 }

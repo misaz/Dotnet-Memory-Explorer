@@ -43,16 +43,26 @@ namespace DotMemoryExplorer.Core {
 			_content = content;
 		}
 
-		public Span<byte> GetMemory(ulong absoluteAddress, ulong length) {
+		public ReadOnlySpan<byte> GetMemory(ulong absoluteAddress, ulong length) {
 			if (absoluteAddress < _address || absoluteAddress >= AddressEnd) {
 				throw new IndexOutOfRangeException(nameof(absoluteAddress));
+			}
+
+			if (length > int.MaxValue) {
+				throw new Exception("Unable to provide memory because requested memory length is too big.");
 			}
 
 			if (absoluteAddress + length < 0) {
 				throw new ArgumentException("Memory block has not enogh memory to satisfy memory request.");
 			}
 
-			return _content;
+			ulong offset = absoluteAddress - _address;
+
+			if (offset > int.MaxValue) {
+				throw new Exception("Unable to provide memory because offset in memory is too high.");
+			}
+
+			return Content.Slice((int)offset, (int)length);
 		}
 
 		public ReadOnlySpan<byte> GetMemory(ulong absoluteAddress) {
