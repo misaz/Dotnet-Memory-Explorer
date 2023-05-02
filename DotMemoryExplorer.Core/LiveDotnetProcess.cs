@@ -85,14 +85,15 @@ namespace DotMemoryExplorer.Core {
 		}
 
 		HeapDump IDotnetProcess.MakeDump() {
-			var dumper = DumperFactory.CreateDumper();
-			var dump = dumper.MakeDump();
+			using (IHeapDumper dumper = DumperFactory.CreateDumper()) {
+				HeapDump dump = dumper.MakeDump();
 
-			_dumps.Add(dump);
+				_dumps.Add(dump);
 
-			RaisePropertyChanged(nameof(AvalaibleDumps));
+				RaisePropertyChanged(nameof(AvalaibleDumps));
 
-			return dump;
+				return dump;
+			}
 		}
 
 		private void RaisePropertyChanged(string propertyName) {
