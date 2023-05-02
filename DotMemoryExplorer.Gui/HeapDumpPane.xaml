@@ -26,7 +26,7 @@
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            
+
             <TextBlock Grid.Row="0" FontSize="26">Heap Dump</TextBlock>
             <TextBlock Grid.Row="1">Creation started:</TextBlock>
             <TextBlock Grid.Row="2">Creation completed:</TextBlock>
@@ -42,24 +42,34 @@
         </Grid>
         <TabControl Grid.Row="1" Margin="10,0,10,10">
             <TabItem Header="Data Types">
-                <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding HeapDump.DataTypeObjectGrouping.Statistics}" IsReadOnly="True">
-                    <DataGrid.Resources>
-                        <Style TargetType="DataGridRow">
-                            <Setter Property="Tag" Value="{Binding .}" />
-                            <EventSetter Event="MouseDoubleClick" Handler="DataType_DoubleClick"/>
-                        </Style>
-                    </DataGrid.Resources>
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Width="550" Header="Type Name" Binding="{Binding Type.TypeName}" />
-                        <DataGridTextColumn Width="100" Header="Objects count" Binding="{Binding ObjectsCount}">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="TextAlignment" Value="Right" />
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <TextBlock VerticalAlignment="Center">Search: </TextBlock>
+                        <TextBox Width="200" Margin="10,10,10,10" Text="{Binding DataTypeFilterSearch, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                    </StackPanel>
+                    <DataGrid Grid.Row="1" AutoGenerateColumns="False" ItemsSource="{Binding FilteredDataTypeStats}" IsReadOnly="True">
+                        <DataGrid.Resources>
+                            <Style TargetType="DataGridRow">
+                                <Setter Property="Tag" Value="{Binding .}" />
+                                <EventSetter Event="MouseDoubleClick" Handler="DataType_DoubleClick"/>
+                            </Style>
+                        </DataGrid.Resources>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="550" Header="Type Name" Binding="{Binding Type.TypeName}" />
+                            <DataGridTextColumn Width="100" Header="Objects count" Binding="{Binding ObjectsCount}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextAlignment" Value="Right" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </TabItem>
             <TabItem Header="Stack referenced objects">
             </TabItem>
