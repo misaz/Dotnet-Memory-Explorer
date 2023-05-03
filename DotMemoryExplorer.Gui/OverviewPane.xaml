@@ -13,7 +13,6 @@
             <TextBlock FontSize="18" Margin="20,0,0,0">Quick Actions</TextBlock>
             <StackPanel Margin="20,0,0,0">
                 <TextBlock><Hyperlink Command="{Binding ApplicationManager.AttachToProcessCommand}">Attach to process</Hyperlink></TextBlock>
-                <TextBlock><Hyperlink Command="{Binding ApplicationManager.StartProcessCommand}">Start process</Hyperlink></TextBlock>
             </StackPanel>
 
         </StackPanel>
