@@ -42,11 +42,13 @@
             <TextBlock Grid.Row="2" Margin="0,0,10,0">Object Header:</TextBlock>
             <TextBlock Grid.Row="3" Margin="0,0,10,0">Mathod Table address:</TextBlock>
             <TextBlock Grid.Row="4" Margin="0,0,10,0">EE Class:</TextBlock>
+            <TextBlock Grid.Row="5" Margin="0,0,10,0">Data Type Name:</TextBlock>
 
             <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Object.ObjectMetadata.Address,Converter={StaticResource hexadecimalAddressConverter}}" />
             <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding Object.ObjectHeader,Converter={StaticResource hexadecimalAddressConverter}}" />
             <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding Object.MethodTableAddress,Converter={StaticResource hexadecimalAddressConverter}}" />
             <TextBlock Grid.Column="1" Grid.Row="4" Text="{Binding Object.EEClassAddress ,Converter={StaticResource hexadecimalAddressConverter}}" />
+            <TextBlock Grid.Column="1" Grid.Row="5" Text="{Binding Object.DataTypeName}" />
         </Grid>
         <TabControl Grid.Row="1" Margin="10,0,10,10">
             <TabItem Header="Content">
