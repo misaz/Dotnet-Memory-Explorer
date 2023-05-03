@@ -104,5 +104,12 @@ namespace DotMemoryExplorer.Core {
 			}
 		}
 
+		internal DotnetObjectMetadata GetObjectByAddress(ulong objAddr) {
+			if (_addressToObjects.ContainsKey(objAddr)) {
+				return _addressToObjects[objAddr];
+			} else {
+				throw new ArgumentException("There is no such object.");
+			}
+		}
 	}
 }

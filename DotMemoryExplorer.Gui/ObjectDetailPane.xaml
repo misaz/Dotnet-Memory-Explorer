@@ -55,7 +55,7 @@
                                 </MultiBinding>
                             </DataGridTextColumn.Binding>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Width="300" Header="Value" />
+                        <DataGridTextColumn Width="300" Header="Value" Binding="{Binding Content}" />
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
