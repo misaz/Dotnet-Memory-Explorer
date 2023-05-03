@@ -45,6 +45,12 @@
         <TabControl Grid.Row="1" Margin="10,0,10,10">
             <TabItem Header="Content">
                 <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Fields}" IsReadOnly="True">
+                    <DataGrid.Resources>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="Tag" Value="{Binding .}" />
+                            <EventSetter Event="MouseDoubleClick" Handler="Field_DoubleClick" />
+                        </Style>
+                    </DataGrid.Resources>
                     <DataGrid.Columns>
                         <DataGridTextColumn Width="50" Header="Offset" Binding="{Binding Offset}" />
                         <DataGridTextColumn Width="300" Header="Owning Class">

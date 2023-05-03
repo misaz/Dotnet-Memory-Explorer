@@ -1,4 +1,5 @@
 ﻿using DotMemoryExplorer.Core;
+using DotMemoryExplorer.Core.FieldValue;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace DotMemoryExplorer.Gui {
 	/// Interaction logic for ObjectDetailPane.xaml
 	/// </summary>
 	public partial class ObjectDetailPane : UserControl {
-
+		private ApplicationManager _appManager;
 		private ObjectDetailProvider _objectDetailProvider;
 		private Lazy<string> _typeNameLazy;
 		private Lazy<string> _objectBinaryContentLazy;
@@ -68,6 +69,7 @@ namespace DotMemoryExplorer.Gui {
 				throw new ArgumentNullException(nameof(appManager));
 			}
 
+			_appManager = appManager;
 			_typeNameLazy = new Lazy<string>(ResolveTypeName);
 			_objectBinaryContentLazy = new Lazy<string>(FormatBinaryContent);
 			_eeClassAddressLazy = new Lazy<ulong>(ReadEEClassAddress);
@@ -105,5 +107,26 @@ namespace DotMemoryExplorer.Gui {
 			}
 		}
 
-	}
+		private void Field_DoubleClick(object sender, MouseButtonEventArgs e) {
+			if (sender is not Control) {
+				throw new InvalidOperationException("Cannot process event because it is triggered by non-control.");
+			}
+
+			Control c = (Control)sender;
+
+			if (c.Tag is not FieldMetadata) {
+				throw new InvalidOperationException("Cannot process event because tag of control triggering event is not send to field metadata.");
+			}
+
+			FieldMetadata meta = (FieldMetadata)c.Tag;
+
+			if (meta.Content is FieldValueClass) {
+				FieldValueClass reference = (FieldValueClass)meta.Content;
+
+				var tab = new ObjectDetailTab(reference.ReferencedObject, OwningHeapDump, _appManager);
+
+				_appManager.AddTab(tab);
+			}
+		}
+    }
 }
