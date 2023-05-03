@@ -10,7 +10,22 @@ using System.Windows.Controls;
 namespace DotMemoryExplorer.Gui {
 	public class Tab : INotifyPropertyChanged {
 
-		public string Name { get; }
+		private string _name;
+
+		public string Name {
+			get {
+				return _name;
+			}
+			protected set {
+				if (value ==  null) {
+					throw new ArgumentNullException(nameof(value));
+				}
+
+				_name = value;
+				RaiseNotifyPropertyChanged(nameof(Name));
+			}
+		}
+
 		public bool CanClose { get; }
 		public Control Content { get; }
 
@@ -24,9 +39,15 @@ namespace DotMemoryExplorer.Gui {
 				throw new ArgumentNullException(nameof(content));
 			}
 
-			Name = name;
+			_name = name;
 			CanClose = canClose;
 			Content = content;
+		}
+
+		private void RaiseNotifyPropertyChanged(string propertyName) {
+			if (PropertyChanged != null) {
+				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
 		}
 	}
 }

@@ -1,16 +1,14 @@
 ﻿namespace DotMemoryExplorer.Core {
 	public struct FieldMetadata {
-		public ulong OwnerTypeId { get; }
-		public ulong Mb { get; }
+		public FieldId FieldId { get; }
 		public ulong Offset { get; }
 		public ulong IsStatic { get; }
 		public ulong FieldType { get; }
 		public int Index { get; }
 		public FieldContent? Content { get; set; }
 
-		public FieldMetadata(ulong owningTypeId, ulong mb, ulong offset, ulong isStatic, ulong type, int index, FieldContent? content) {
-			OwnerTypeId = owningTypeId;
-			Mb = mb;
+		public FieldMetadata(FieldId fieldId, ulong offset, ulong isStatic, ulong type, int index, FieldContent? content) {
+			FieldId = fieldId;
 			Offset = offset;
 			IsStatic = isStatic;
 			FieldType = type;

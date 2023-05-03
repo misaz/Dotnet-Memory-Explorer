@@ -59,8 +59,8 @@
                             </Style>
                         </DataGrid.Resources>
                         <DataGrid.Columns>
-                            <DataGridTextColumn Width="550" Header="Type Name" Binding="{Binding Type.TypeName}" />
-                            <DataGridTextColumn Width="100" Header="Objects count" Binding="{Binding ObjectsCount}">
+                            <DataGridTextColumn Width="550" Header="Type Name" Binding="{Binding TypeName}" />
+                            <DataGridTextColumn Width="100" Header="Objects count" Binding="{Binding StatsEntry.ObjectsCount}">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="TextAlignment" Value="Right" />
@@ -71,9 +71,6 @@
                     </DataGrid>
                 </Grid>
             </TabItem>
-            <TabItem Header="Stack referenced objects">
-            </TabItem>
-
         </TabControl>
     </Grid>
 </UserControl>

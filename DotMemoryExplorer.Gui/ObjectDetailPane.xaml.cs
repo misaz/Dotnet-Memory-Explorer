@@ -2,6 +2,7 @@
 using DotMemoryExplorer.Core.FieldValue;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,55 +20,14 @@ namespace DotMemoryExplorer.Gui {
 	/// <summary>
 	/// Interaction logic for ObjectDetailPane.xaml
 	/// </summary>
-	public partial class ObjectDetailPane : UserControl {
+	public partial class ObjectDetailPane : UserControl, IDisposable {
 		private ApplicationManager _appManager;
-		private ObjectDetailProvider _objectDetailProvider;
-		private Lazy<string> _typeNameLazy;
-		private Lazy<string> _objectBinaryContentLazy;
-		private Lazy<ulong> _eeClassAddressLazy;
-		private Lazy<ulong> _objectHeaderLazy;
-		private Lazy<IEnumerable<FieldMetadata>> _objectFieldsLazy;
+		private HeapDump _owningHeapDump;
+
 		private ObjectsListingPane _referencesPane;
 		private ObjectsListingPane _referencedByPane;
 
-		public HeapDump OwningHeapDump { get; }
-		public DotnetObjectMetadata Metadata { get; }
-
-		public string TypeName {
-			get {
-				return _typeNameLazy.Value;
-			}
-		}
-
-		public ulong MethodTableAddress {
-			get {
-				return Metadata.TypeId;
-			}
-		}
-
-		public ulong EEClassAddress {
-			get {
-				return _eeClassAddressLazy.Value;
-			}
-		}
-
-		public ulong ObjectHeader {
-			get {
-				return _objectHeaderLazy.Value;
-			}
-		}
-
-		public string BinaryContentFormatted {
-			get {
-				return _objectBinaryContentLazy.Value;
-			}
-		}
-
-		public IEnumerable<FieldMetadata> Fields {
-			get {
-				return _objectFieldsLazy.Value;
-			}
-		}
+		public ObjectGuiWrapper Object { get; }
 
 		public ObjectDetailPane(DotnetObjectMetadata objMetadata, HeapDump owningHeapDump, ApplicationManager appManager) {
 			if (owningHeapDump == null) {
@@ -78,15 +38,10 @@ namespace DotMemoryExplorer.Gui {
 				throw new ArgumentNullException(nameof(appManager));
 			}
 
-			Metadata = objMetadata;
-			OwningHeapDump = owningHeapDump;
+			Object = new ObjectGuiWrapper(objMetadata, owningHeapDump, appManager);
+			_owningHeapDump = owningHeapDump;
 			_appManager = appManager;
-			_typeNameLazy = new Lazy<string>(ResolveTypeName);
-			_objectBinaryContentLazy = new Lazy<string>(FormatBinaryContent);
-			_eeClassAddressLazy = new Lazy<ulong>(ReadEEClassAddress);
-			_objectHeaderLazy = new Lazy<ulong>(ReadObjectHeader);
-			_objectFieldsLazy = new Lazy<IEnumerable<FieldMetadata>>(ReadObjectFields);
-			_objectDetailProvider = new ObjectDetailProvider(objMetadata, owningHeapDump);
+
 			_referencesPane = new ObjectsListingPane(LoadReferences(objMetadata.References), owningHeapDump, _appManager);
 			_referencedByPane = new ObjectsListingPane(LoadReferences(objMetadata.ReferencedBy), owningHeapDump, _appManager);
 
@@ -100,55 +55,52 @@ namespace DotMemoryExplorer.Gui {
 		private IEnumerable<DotnetObjectMetadata> LoadReferences(IEnumerable<DotnetReferenceMetadata> references) {
 			List<DotnetObjectMetadata> objects = new List<DotnetObjectMetadata>(references.Count());
 			foreach (var reference in references) {
-				objects.Add(OwningHeapDump.GetObjectByAddress(reference.TargetObjectAddress));
+				objects.Add(_owningHeapDump.GetObjectByAddress(reference.TargetObjectAddress));
 			}
 			return objects;
 		}
 
-		private IEnumerable<FieldMetadata> ReadObjectFields() {
-			return _objectDetailProvider.GetFields();
-		}
-
-		private ulong ReadEEClassAddress() {
-			return _objectDetailProvider.GetEEClassAddress();
-		}
-		private ulong ReadObjectHeader() {
-			return _objectDetailProvider.GetObjectHeader();
-		}
-
-		private string ResolveTypeName() {
-			return OwningHeapDump.GetTypeById(Metadata.TypeId).TypeName;
-		}
-
-		private string BuildBinaryContentFormatted() {
-			var mem = OwningHeapDump.MemoryDump.GetMemory(Metadata.Address, Metadata.Size);
-			return BinaryDataFormatter.FormatBinary(mem);
-		}
-
-		private string FormatBinaryContent() {
-			try {
-				return BuildBinaryContentFormatted();
-			} catch (Exception ex) {
-				return $"Error while reading memory. Details:\n\n{ex.GetType().Name}: {ex.Message}\n\n{ex.StackTrace}";
-			}
-		}
 
 		private void Field_DoubleClick(object sender, MouseButtonEventArgs e) {
-			if (sender is not Control) {
-				throw new InvalidOperationException("Cannot process event because it is triggered by non-control.");
+			FieldGuiWrapper wrapper = GuiEventsHelper.UnpackSenderTag<FieldGuiWrapper>(sender);
+
+			if (wrapper.FieldMetadata.Content is FieldValueClass) {
+				FieldValueClass reference = (FieldValueClass)wrapper.FieldMetadata.Content;
+				_appManager.OpenObjectDetail(reference.ReferencedObject, _owningHeapDump);
 			}
+		}
 
-			Control c = (Control)sender;
-
-			if (c.Tag is not FieldMetadata) {
-				throw new InvalidOperationException("Cannot process event because tag of control triggering event is not send to field metadata.");
+		private void EditObject_Click(object sender, RoutedEventArgs e) {
+			var dlg = new NameEditDialog(_appManager.LabelManager.GetObjectLabel(Object.ObjectMetadata));
+			if (dlg.ShowDialog() == true) {
+				_appManager.LabelManager.SetObjectLabel(Object.ObjectMetadata, dlg.Label);
 			}
+		}
 
-			FieldMetadata meta = GuiEventsHelper.UnpackSenderTag<FieldMetadata>(sender);
+		public void Dispose() {
+			Object.Dispose();
+		}
 
-			if (meta.Content is FieldValueClass) {
-				FieldValueClass reference = (FieldValueClass)meta.Content;
-				_appManager.OpenObjectDetail(reference.ReferencedObject, OwningHeapDump);
+		private void RenameField_Click(object sender, RoutedEventArgs e) {
+			FieldGuiWrapper wrapper = GuiEventsHelper.UnpackSenderTag<FieldGuiWrapper>(sender);
+
+			NameEditDialog dlg = new NameEditDialog(wrapper.Label);
+			if (dlg.ShowDialog() == true) {
+				_appManager.LabelManager.SetFieldLabel(wrapper.FieldMetadata.FieldId, dlg.Label);
+			}
+		}
+
+		private void LabelDataType_Click(object sender, RoutedEventArgs e) {
+			var dlg = new NameEditDialog(_appManager.LabelManager.GetDataTypeLabel(Object.ObjectMetadata.TypeId));
+			if (dlg.ShowDialog() == true) {
+				_appManager.LabelManager.SetDataTypeLabel(Object.ObjectMetadata.TypeId, dlg.Label);
+			}
+		}
+
+		private void LabelObject_Click(object sender, RoutedEventArgs e) {
+			var dlg = new NameEditDialog(_appManager.LabelManager.GetObjectLabel(Object.ObjectMetadata));
+			if (dlg.ShowDialog() == true) {
+				_appManager.LabelManager.SetObjectLabel(Object.ObjectMetadata, dlg.Label);
 			}
 		}
     }

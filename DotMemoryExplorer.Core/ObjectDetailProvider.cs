@@ -152,11 +152,11 @@ namespace DotMemoryExplorer.Core {
 					ulong offset = (fieldMetadata2 & 0x7FFFFFF);
 					ulong type = fieldMetadata2 >> 27;
 
-					FieldMetadata metaWithoutContent = new FieldMetadata(methodTablePointer, mb, offset, isStatic, type, index, null);
-
+					FieldId fId = new FieldId(methodTablePointer, mb);
+					FieldMetadata metaWithoutContent = new FieldMetadata(fId, offset, isStatic, type, index, null);
 					FieldContent content = ParseFieldValue(metaWithoutContent);
 
-					output.Add(new FieldMetadata(methodTablePointer, mb, offset, isStatic, type, index, content));
+					output.Add(new FieldMetadata(fId, offset, isStatic, type, index, content));
 
 					index++;
 				}

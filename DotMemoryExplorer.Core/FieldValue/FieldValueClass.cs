@@ -1,4 +1,5 @@
 ﻿namespace DotMemoryExplorer.Core.FieldValue {
+
 	public class FieldValueClass : FieldContent {
 		public DotnetObjectMetadata ReferencedObject { get; }
 		public DotnetTypeMetadata ReferencedObjectType { get; }

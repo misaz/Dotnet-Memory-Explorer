@@ -18,14 +18,14 @@ namespace DotMemoryExplorer.Gui {
 	/// <summary>
 	/// Interaction logic for ObjectsListingPane.xaml
 	/// </summary>
-	public partial class ObjectsListingPane : UserControl {
+	public partial class ObjectsListingPane : UserControl, IDisposable {
 
 		private readonly ApplicationManager _applicationManager;
-		private IEnumerable<DotnetObjectMetadata> _objects;
+		private List<ObjectGuiWrapper> _objects;
 
-		public IEnumerable<DotnetObjectMetadata> Objects {
+		public IEnumerable<ObjectGuiWrapper> Objects {
 			get {
-				return _objects;
+				return _objects.AsReadOnly();
 			}
 		}
 
@@ -44,7 +44,11 @@ namespace DotMemoryExplorer.Gui {
 				throw new ArgumentNullException(nameof(appManager));
 			}
 
-			_objects = objects;
+			_objects = new List<ObjectGuiWrapper>();
+			foreach (var obj in objects) {
+				_objects.Add(new ObjectGuiWrapper(obj, heapDump, appManager));
+			}
+
 			_applicationManager = appManager;
 			HeapDump = heapDump;
 
@@ -53,8 +57,15 @@ namespace DotMemoryExplorer.Gui {
 		}
 
 		private void Object_DoubleClick(object sender, MouseButtonEventArgs e) {
-			DotnetObjectMetadata metadata = GuiEventsHelper.UnpackSenderTag<DotnetObjectMetadata>(sender);
-			_applicationManager.OpenObjectDetail(metadata, HeapDump);
+			ObjectGuiWrapper wrapper = GuiEventsHelper.UnpackSenderTag<ObjectGuiWrapper>(sender);
+			_applicationManager.OpenObjectDetail(wrapper.ObjectMetadata, HeapDump);
         }
-    }
+
+		public void Dispose() {
+			foreach (var obj in _objects) {
+				obj.Dispose();
+			}
+			_objects.Clear();
+		}
+	}
 }

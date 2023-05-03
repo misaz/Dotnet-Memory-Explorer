@@ -16,15 +16,9 @@
             </Style>
         </DataGrid.Resources>
         <DataGrid.Columns>
-            <DataGridTextColumn Width="130" Header="Address" Binding="{Binding Address, Converter={StaticResource hexadecimalAddressConverter}}" />
-            <DataGridTextColumn Width="600" Header="Data Type">
-                <DataGridTextColumn.Binding>
-                    <MultiBinding Converter="{StaticResource typeIdToNameConverter}">
-                        <Binding Path="TypeId" />
-                        <Binding Path="HeapDump" ElementName="userControl" />
-                    </MultiBinding>
-                </DataGridTextColumn.Binding>
-            </DataGridTextColumn>
+            <DataGridTextColumn Width="130" Header="Address" Binding="{Binding ObjectMetadata.Address, Converter={StaticResource hexadecimalAddressConverter}}" />
+            <DataGridTextColumn Width="130" Header="Label" Binding="{Binding Label}" />
+            <DataGridTextColumn Width="600" Header="Data Type" Binding="{Binding DataTypeName}" />
         </DataGrid.Columns>
     </DataGrid>
 </UserControl>

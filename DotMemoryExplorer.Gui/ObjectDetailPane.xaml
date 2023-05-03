@@ -31,20 +31,26 @@
                 <ColumnDefinition Width="2*" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" FontSize="26" Text="{Binding TypeName}" Grid.ColumnSpan="2" />
+            <TextBlock Grid.Row="0" FontSize="26"  Grid.ColumnSpan="2" Text="{Binding Object.Name}" VerticalAlignment="Center" />
+            <Grid ColumnSpan="2">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <Button Width="130" Click="LabelObject_Click" Margin="2">Rename Object</Button>
+                    <Button Width="130" Click="LabelDataType_Click" Margin="2">Rename Data Type</Button>
+                </StackPanel>
+            </Grid>
             <TextBlock Grid.Row="1" Margin="0,0,10,0">Address:</TextBlock>
             <TextBlock Grid.Row="2" Margin="0,0,10,0">Object Header:</TextBlock>
             <TextBlock Grid.Row="3" Margin="0,0,10,0">Mathod Table address:</TextBlock>
             <TextBlock Grid.Row="4" Margin="0,0,10,0">EE Class:</TextBlock>
 
-            <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Metadata.Address,Converter={StaticResource hexadecimalAddressConverter}}" />
-            <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding ObjectHeader,Converter={StaticResource hexadecimalAddressConverter}}" />
-            <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding MethodTableAddress,Converter={StaticResource hexadecimalAddressConverter}}" />
-            <TextBlock Grid.Column="1" Grid.Row="4" Text="{Binding EEClassAddress ,Converter={StaticResource hexadecimalAddressConverter}}" />
+            <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Object.ObjectMetadata.Address,Converter={StaticResource hexadecimalAddressConverter}}" />
+            <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding Object.ObjectHeader,Converter={StaticResource hexadecimalAddressConverter}}" />
+            <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding Object.MethodTableAddress,Converter={StaticResource hexadecimalAddressConverter}}" />
+            <TextBlock Grid.Column="1" Grid.Row="4" Text="{Binding Object.EEClassAddress ,Converter={StaticResource hexadecimalAddressConverter}}" />
         </Grid>
         <TabControl Grid.Row="1" Margin="10,0,10,10">
             <TabItem Header="Content">
-                <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Fields}" IsReadOnly="True">
+                <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Object.Fields}" IsReadOnly="True">
                     <DataGrid.Resources>
                         <Style TargetType="DataGridRow">
                             <Setter Property="Tag" Value="{Binding .}" />
@@ -52,21 +58,26 @@
                         </Style>
                     </DataGrid.Resources>
                     <DataGrid.Columns>
-                        <DataGridTextColumn Width="50" Header="Offset" Binding="{Binding Offset}" />
-                        <DataGridTextColumn Width="300" Header="Owning Class">
-                            <DataGridTextColumn.Binding>
-                                <MultiBinding Converter="{StaticResource typeIdToNameConverter}">
-                                    <Binding Path="OwnerTypeId" />
-                                    <Binding Path="OwningHeapDump" ElementName="userControl" />
-                                </MultiBinding>
-                            </DataGridTextColumn.Binding>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Width="300" Header="Value" Binding="{Binding Content}" />
+                        <DataGridTextColumn Width="50" Header="Offset" Binding="{Binding FieldMetadata.Offset}" />
+                        <DataGridTextColumn Width="200" Header="Owning Class" Binding="{Binding OwningClass}" />
+                        <DataGridTemplateColumn Width="150" Header="Label">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <TextBlock Text="{Binding Label}" />
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                            <Button Click="RenameField_Click" Tag="{Binding .}" Height="16" FontSize="10">Rename</Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Width="300" Header="Value" Binding="{Binding ValueString}" />
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
             <TabItem Header="Binary content">
-                <TextBox FontFamily="Consolas" TextWrapping="Wrap" IsReadOnly="True" Text="{Binding BinaryContentFormatted, Mode=OneWay}" />
+                <TextBox FontFamily="Consolas" TextWrapping="Wrap" IsReadOnly="True" Text="{Binding Object.BinaryContentFormatted, Mode=OneWay}" />
             </TabItem>
             <TabItem Header="References" x:Name="tabReferences"></TabItem>
             <TabItem Header="Referenced by" x:Name="tabReferencedBy"></TabItem>

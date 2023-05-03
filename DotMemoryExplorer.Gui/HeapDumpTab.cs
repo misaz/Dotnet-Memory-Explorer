@@ -10,7 +10,7 @@ namespace DotMemoryExplorer.Gui {
 	internal class HeapDumpTab : Tab {
 		public HeapDump HeapDump { get; }
 
-		public HeapDumpTab(int dumpNumber, HeapDump heapDump, ApplicationManager appManager) : base($"Dump #{dumpNumber} of {heapDump.OwningProcess.ToString()}", new HeapDumpPane(new HeapDumpViewModel(heapDump), appManager), true) {
+		public HeapDumpTab(int dumpNumber, HeapDump heapDump, ApplicationManager appManager) : base($"Dump #{dumpNumber} of {heapDump.OwningProcess.ToString()}", new HeapDumpPane(heapDump, appManager), true) {
 			if (heapDump == null) {
 				throw new ArgumentNullException(nameof(heapDump));
 			}

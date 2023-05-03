@@ -17,7 +17,7 @@ namespace DotMemoryExplorer.Gui {
 		private readonly AttachToProcessCommand _attachToProcessCommand;
 		private readonly CloseActiveTabCommand _closeTabCommand;
 		private readonly SearchStringCommand _searchStringCommand;
-
+		private readonly LabelManager _labelManager;
 
 		public StartProcessCommand StartProcessCommand {
 			get {
@@ -49,6 +49,12 @@ namespace DotMemoryExplorer.Gui {
 			}
 		}
 
+		public LabelManager LabelManager {
+			get {
+				return _labelManager;
+			}
+		}
+
 		public Tab? SelectedTab {
 			get {
 				return _selectedTab;
@@ -76,6 +82,7 @@ namespace DotMemoryExplorer.Gui {
 			_closeTabCommand = new CloseActiveTabCommand(this);
 			_searchStringCommand = new SearchStringCommand(this);
 			_selectedTab = null;
+			_labelManager = new LabelManager();
 
 			Tabs.Add(new OverviewTab(this));
 		}
