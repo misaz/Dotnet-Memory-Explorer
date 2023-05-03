@@ -4,6 +4,8 @@ using Microsoft.Diagnostics.Tracing.Parsers;
 using Microsoft.Diagnostics.Tracing.Parsers.Clr;
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
+using System.Runtime.InteropServices;
+using Windows.Win32;
 
 namespace DotMemoryExplorer.Core {
 
@@ -45,7 +47,7 @@ namespace DotMemoryExplorer.Core {
 			}
 
 			// make snapshot of memory
-			_memoryDump = _targetProcess.ProcessMemoryManger.MakeMemoryDump();
+			// _memoryDump = _targetProcess.ProcessMemoryManger.MakeMemoryDump();
 
 			SetupClient();
 			LogEvents();
@@ -116,6 +118,9 @@ namespace DotMemoryExplorer.Core {
 				return;
 			}
 
+			// at begining copy memory content
+			_memoryDump = _targetProcess.ProcessMemoryManger.MakeMemoryDump();
+
 			// save GC id for detecting that GC which we are insterested in completed (checked in HandleGcStop)
 			_gcId = evnt.Count;
 			_isGcInProgress = true;
@@ -134,7 +139,7 @@ namespace DotMemoryExplorer.Core {
 				return;
 			}
 
-			_eventSource.StopProcessing();
+			_eventSource?.StopProcessing();
 			_isGcInProgress = false;
 			_isDumpCompleted = true;
 			_creationCompleted = DateTime.Now;

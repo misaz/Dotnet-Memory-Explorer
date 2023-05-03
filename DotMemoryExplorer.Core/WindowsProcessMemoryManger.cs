@@ -14,6 +14,12 @@ namespace DotMemoryExplorer.Core {
 
 		private readonly Process _proc;
 
+		[DllImport("ntdll.dll", PreserveSig = false)]
+		public static extern void NtSuspendProcess(IntPtr processHandle);
+
+		[DllImport("ntdll.dll", PreserveSig = false, SetLastError = true)]
+		public static extern void NtResumeProcess(IntPtr processHandle);
+
 		public WindowsProcessMemoryManger(Process proc) {
 			if (proc == null) {
 				throw new ArgumentNullException(nameof(proc));
@@ -81,6 +87,8 @@ namespace DotMemoryExplorer.Core {
 		}
 
 		public unsafe MemoryDump MakeMemoryDump() {
+			NtSuspendProcess(_proc.Handle);
+
 			SafeHandle p = _proc.SafeHandle;
 
 			IEnumerable<MemoryAddressRange> regionsAddresses = GetMemoryRegions();
@@ -103,6 +111,8 @@ namespace DotMemoryExplorer.Core {
 
 				regions.Add(new MemoryRegion((ulong)region.Address, managedBuffer));
 			}
+
+			NtResumeProcess(_proc.Handle);
 
 			return new MemoryDump(regions);
 		}
