@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DotMemoryExplorer.Core;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -15,6 +16,7 @@ namespace DotMemoryExplorer.Gui {
 		private readonly StartProcessCommand _startProcessCommand;
 		private readonly AttachToProcessCommand _attachToProcessCommand;
 		private readonly CloseActiveTabCommand _closeTabCommand;
+		private readonly SearchStringCommand _searchStringCommand;
 
 
 		public StartProcessCommand StartProcessCommand {
@@ -38,6 +40,12 @@ namespace DotMemoryExplorer.Gui {
 		public ObservableCollection<Tab> Tabs {
 			get {
 				return _tabs;
+			}
+		}
+
+		public SearchStringCommand SearchStringCommand {
+			get {
+				return _searchStringCommand;
 			}
 		}
 
@@ -66,6 +74,7 @@ namespace DotMemoryExplorer.Gui {
 			_startProcessCommand = new StartProcessCommand(this);
 			_attachToProcessCommand = new AttachToProcessCommand(this);
 			_closeTabCommand = new CloseActiveTabCommand(this);
+			_searchStringCommand = new SearchStringCommand(this);
 			_selectedTab = null;
 
 			Tabs.Add(new OverviewTab(this));
@@ -112,6 +121,11 @@ namespace DotMemoryExplorer.Gui {
 			if (autoSelect) {
 				SelectedTab = tab;
 			}
+		}
+
+		public void OpenObjectDetail(DotnetObjectMetadata metadata, HeapDump heapDump) {
+			ObjectDetailTab tab = new ObjectDetailTab(metadata, heapDump, this);
+			AddTab(tab);
 		}
 	}
 }

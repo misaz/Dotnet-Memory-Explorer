@@ -9,6 +9,12 @@ namespace DotMemoryExplorer.Core {
 
 		private SortedDictionary<ulong, MemoryRegion> _regions = new SortedDictionary<ulong, MemoryRegion>();
 
+		public IEnumerable<MemoryRegion> Regions {
+			get {
+				return _regions.Values;
+			}
+		}
+
 		public MemoryDump(IEnumerable<MemoryRegion> regions) {
 			foreach (MemoryRegion region in regions) {
 				if (region == null) {

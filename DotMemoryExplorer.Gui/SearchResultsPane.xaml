@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="DotMemoryExplorer.Gui.SearchResultsPane"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DotMemoryExplorer.Gui"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <DataGrid IsReadOnly="True" ItemsSource="{Binding Results}" AutoGenerateColumns="False">
+        <DataGrid.Resources>
+            <local:HexadecimalAddressConverter x:Key="hexadecimalAddressConverter" />
+            <local:SearchResultToObjectInfoConverter x:Key="searchResultToObjectInfoConverter" />
+            <Style TargetType="DataGridRow">
+                <Setter Property="Tag" Value="{Binding .}" />
+                <EventSetter Event="MouseDoubleClick" Handler="DataGridRow_MouseDoubleClick" />
+            </Style>
+        </DataGrid.Resources>
+        <DataGrid.Columns>
+            <DataGridTextColumn Width="130" Header="Occurence Address" Binding="{Binding OccurenceAddress,Converter={StaticResource hexadecimalAddressConverter}}" />
+            <DataGridTextColumn Width="450" Header="Object" Binding="{Binding ., Converter={StaticResource searchResultToObjectInfoConverter}}" />
+        </DataGrid.Columns>    
+    </DataGrid>
+</UserControl>

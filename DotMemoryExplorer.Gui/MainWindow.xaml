@@ -9,17 +9,14 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="File">
-                <MenuItem Header="Start Process" Command="{Binding StartProcessCommand}"></MenuItem>
                 <MenuItem Header="Attach to Process" Command="{Binding AttachToProcessCommand}"></MenuItem>
                 <Separator />
                 <MenuItem Header="Close active tab" Command="{Binding CloseTabCommand}"></MenuItem>
+                <Separator />
             </MenuItem>
             <MenuItem Header="Search">
-                <MenuItem Header="Search Data Type"></MenuItem>
-                <Separator />
-                <MenuItem Header="Search String"></MenuItem>
+                <MenuItem Header="Search String" Command="{Binding SearchStringCommand}"></MenuItem>
                 <MenuItem Header="Search Binary Data"></MenuItem>
-                <MenuItem Header="Search Guid"></MenuItem>
                 <MenuItem Header="Search Numerics"></MenuItem>
             </MenuItem>
         </Menu>

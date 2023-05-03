@@ -144,14 +144,11 @@ namespace DotMemoryExplorer.Gui {
 				throw new InvalidOperationException("Cannot process event because tag of control triggering event is not send to field metadata.");
 			}
 
-			FieldMetadata meta = (FieldMetadata)c.Tag;
+			FieldMetadata meta = GuiEventsHelper.UnpackSenderTag<FieldMetadata>(sender);
 
 			if (meta.Content is FieldValueClass) {
 				FieldValueClass reference = (FieldValueClass)meta.Content;
-
-				var tab = new ObjectDetailTab(reference.ReferencedObject, OwningHeapDump, _appManager);
-
-				_appManager.AddTab(tab);
+				_appManager.OpenObjectDetail(reference.ReferencedObject, OwningHeapDump);
 			}
 		}
     }

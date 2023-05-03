@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 namespace DotMemoryExplorer.Core {
 	public class HeapDump {
 
+		private List<ulong> _sortedKnownAddresses;
 		private SortedDictionary<ulong, DotnetObjectMetadata> _addressToObjects;
 		private SortedDictionary<ulong, DotnetTypeMetadata> _typeIdToType;
 
@@ -41,6 +42,8 @@ namespace DotMemoryExplorer.Core {
 		public int ReferencesCount { get; private set; }
 		private bool _areStatisticsSet = false;
 
+		public HeapDumpSearchEngine SearchEngine { get; }
+
 		public HeapDump(MemoryDump memory, SortedDictionary<ulong, DotnetObjectMetadata> addressToObjects, SortedDictionary<ulong, DotnetTypeMetadata> typeIdToType, IDotnetProcess owningProcess) {
 			if (memory == null) {
 				throw new ArgumentNullException(nameof(memory));
@@ -60,10 +63,12 @@ namespace DotMemoryExplorer.Core {
 
 			_addressToObjects = addressToObjects;
 			_typeIdToType = typeIdToType;
+			_sortedKnownAddresses = new List<ulong>(addressToObjects.Keys);
 
 			MemoryDump = memory;
 			OwningProcess = owningProcess;
 			DataTypeObjectGrouping = new DataTypeObjectGrouping(_addressToObjects, _typeIdToType);
+			SearchEngine = new HeapDumpSearchEngine(this);
 		}
 
 		public void SetTimeMarks(DateTime creationStarted, DateTime creationCompleted, DateTime processingCompleted) {
@@ -110,6 +115,28 @@ namespace DotMemoryExplorer.Core {
 			} else {
 				throw new ArgumentException("There is no such object.");
 			}
+		}
+
+		internal bool GetObjectByInnerAddress(ref DotnetObjectMetadata metadata, ulong addr) {
+			int index = _sortedKnownAddresses.BinarySearch(addr);
+
+			if (index >= 0) {
+				metadata = GetObjectByAddress(addr);
+			} else {
+				int bitFlipped = ~index - 1;
+				if (bitFlipped != -1) {
+					metadata = GetObjectByAddress(_sortedKnownAddresses[bitFlipped]);
+				} else {
+					return false;
+				}
+
+			}
+
+			if (addr >= metadata.Address + metadata.Size) {
+				return false;
+			}
+
+			return true;
 		}
 	}
 }

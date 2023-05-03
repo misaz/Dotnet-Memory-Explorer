@@ -41,19 +41,8 @@ namespace DotMemoryExplorer.Gui {
 		}
 
 		private void DataType_DoubleClick(object sender, MouseButtonEventArgs e) {
-			if (sender is not Control) {
-				throw new InvalidOperationException("Unable to process double click event because event is fired by non-Control.");
-			}
-
-			Control c = (Control)sender;
-
-			if (c.Tag is not DataTypeStatisticsEntry) {
-				throw new InvalidOperationException("Unable to process double click event because event is by control with invalid Tag value set.");
-			}
-
-			DataTypeStatisticsEntry statEntry = (DataTypeStatisticsEntry)c.Tag;
+			DataTypeStatisticsEntry statEntry = GuiEventsHelper.UnpackSenderTag<DataTypeStatisticsEntry>(sender);
 			var objects = _heapDumpViewModel.HeapDump.DataTypeObjectGrouping.GetObjectsByTypeId(statEntry.Type.TypeId);
-
 			_appManager.AddTab(new ObjectsListingTab($"{statEntry.Type.TypeName} Instances", objects, _heapDumpViewModel.HeapDump, _appManager));
         }
 
