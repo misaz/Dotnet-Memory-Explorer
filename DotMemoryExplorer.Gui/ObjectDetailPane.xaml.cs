@@ -25,6 +25,7 @@ namespace DotMemoryExplorer.Gui {
 		private Lazy<string> _typeNameLazy;
 		private Lazy<string> _objectBinaryContentLazy;
 		private Lazy<ulong> _eeClassAddressLazy;
+		private Lazy<ulong> _objectHeaderLazy;
 		private Lazy<IEnumerable<FieldMetadata>> _objectFieldsLazy;
 		private ObjectsListingPane _referencesPane;
 		private ObjectsListingPane _referencedByPane;
@@ -47,6 +48,12 @@ namespace DotMemoryExplorer.Gui {
 		public ulong EEClassAddress {
 			get {
 				return _eeClassAddressLazy.Value;
+			}
+		}
+
+		public ulong ObjectHeader {
+			get {
+				return _objectHeaderLazy.Value;
 			}
 		}
 
@@ -77,6 +84,7 @@ namespace DotMemoryExplorer.Gui {
 			_typeNameLazy = new Lazy<string>(ResolveTypeName);
 			_objectBinaryContentLazy = new Lazy<string>(FormatBinaryContent);
 			_eeClassAddressLazy = new Lazy<ulong>(ReadEEClassAddress);
+			_objectHeaderLazy = new Lazy<ulong>(ReadObjectHeader);
 			_objectFieldsLazy = new Lazy<IEnumerable<FieldMetadata>>(ReadObjectFields);
 			_objectDetailProvider = new ObjectDetailProvider(objMetadata, owningHeapDump);
 			_referencesPane = new ObjectsListingPane(LoadReferences(objMetadata.References), owningHeapDump, _appManager);
@@ -103,6 +111,9 @@ namespace DotMemoryExplorer.Gui {
 
 		private ulong ReadEEClassAddress() {
 			return _objectDetailProvider.GetEEClassAddress();
+		}
+		private ulong ReadObjectHeader() {
+			return _objectDetailProvider.GetObjectHeader();
 		}
 
 		private string ResolveTypeName() {

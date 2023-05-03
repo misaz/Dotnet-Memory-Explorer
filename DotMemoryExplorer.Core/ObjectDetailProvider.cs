@@ -33,6 +33,14 @@ namespace DotMemoryExplorer.Core {
 		}
 
 		/// <summary>
+		/// Gets object header field of the object
+		/// </summary>
+		/// <returns></returns>
+		public ulong GetObjectHeader() {
+			return ReadLiveMemoryPointer(_object.Address - GetPointerSize());
+		}
+
+		/// <summary>
 		/// Gets address of EEClass related to class specified by MethodTable at specified address.
 		/// </summary>
 		/// <param name="methodTablePointer">Address of MethodTable</param>
