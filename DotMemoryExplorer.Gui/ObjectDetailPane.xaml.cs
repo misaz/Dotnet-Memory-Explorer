@@ -26,6 +26,8 @@ namespace DotMemoryExplorer.Gui {
 		private Lazy<string> _objectBinaryContentLazy;
 		private Lazy<ulong> _eeClassAddressLazy;
 		private Lazy<IEnumerable<FieldMetadata>> _objectFieldsLazy;
+		private ObjectsListingPane _referencesPane;
+		private ObjectsListingPane _referencedByPane;
 
 		public HeapDump OwningHeapDump { get; }
 		public DotnetObjectMetadata Metadata { get; }
@@ -69,17 +71,30 @@ namespace DotMemoryExplorer.Gui {
 				throw new ArgumentNullException(nameof(appManager));
 			}
 
+			Metadata = objMetadata;
+			OwningHeapDump = owningHeapDump;
 			_appManager = appManager;
 			_typeNameLazy = new Lazy<string>(ResolveTypeName);
 			_objectBinaryContentLazy = new Lazy<string>(FormatBinaryContent);
 			_eeClassAddressLazy = new Lazy<ulong>(ReadEEClassAddress);
 			_objectFieldsLazy = new Lazy<IEnumerable<FieldMetadata>>(ReadObjectFields);
 			_objectDetailProvider = new ObjectDetailProvider(objMetadata, owningHeapDump);
-			Metadata = objMetadata;
-			OwningHeapDump = owningHeapDump;
+			_referencesPane = new ObjectsListingPane(LoadReferences(objMetadata.References), owningHeapDump, _appManager);
+			_referencedByPane = new ObjectsListingPane(LoadReferences(objMetadata.ReferencedBy), owningHeapDump, _appManager);
 
 			DataContext = this;
 			InitializeComponent();
+
+			tabReferences.Content = _referencesPane;
+			tabReferencedBy.Content = _referencedByPane;
+		}
+
+		private IEnumerable<DotnetObjectMetadata> LoadReferences(IEnumerable<DotnetReferenceMetadata> references) {
+			List<DotnetObjectMetadata> objects = new List<DotnetObjectMetadata>(references.Count());
+			foreach (var reference in references) {
+				objects.Add(OwningHeapDump.GetObjectByAddress(reference.TargetObjectAddress));
+			}
+			return objects;
 		}
 
 		private IEnumerable<FieldMetadata> ReadObjectFields() {

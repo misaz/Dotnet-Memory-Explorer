@@ -1,12 +1,12 @@
 ﻿namespace DotMemoryExplorer.Core {
 	public struct DotnetReferenceMetadata {
 
-		private int _referencingFieldId;
-		private ulong _target;
+		public int ReferencingFieldId { get; }
+		public ulong TargetObjectAddress { get; }
 
 		public DotnetReferenceMetadata(int referencingFieldId, ulong target) {
-			_referencingFieldId = referencingFieldId;
-			_target = target;
+			ReferencingFieldId = referencingFieldId;
+			TargetObjectAddress = target;
 		}
 	}
 }
