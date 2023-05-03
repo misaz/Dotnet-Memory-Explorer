@@ -1,5 +1,4 @@
 ﻿using Microsoft.Diagnostics.Tracing.Parsers.Clr;
-using System.Reflection;
 
 namespace DotMemoryExplorer.Core {
 	public class EtwHeapBuilder {
@@ -55,9 +54,18 @@ namespace DotMemoryExplorer.Core {
 		public HeapDump Build() {
 			ProcessBulkNodes();
 			ProcessBulkTypes();
+			BuildBackReference();
 			_isBuilt = true;
 
 			return new HeapDump(_memoryDump, _addressToObject, _typeIdToType, _owningProcess);
+		}
+
+		private void BuildBackReference() {
+			foreach (var obj in _addressToObject.Values) {
+				foreach (var reference in obj.References) {
+					_addressToObject[reference.TargetObjectAddress].ReferencedBy.Add(new DotnetReferenceMetadata(-1, obj.Address));
+				}
+			}
 		}
 
 		private unsafe void ProcessBulkNodes() {
