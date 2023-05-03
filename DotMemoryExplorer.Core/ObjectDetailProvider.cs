@@ -116,7 +116,7 @@ namespace DotMemoryExplorer.Core {
 			// MethodTable which is at the begining of every field.
 
 			ulong fieldContentAddress = _object.Address + GetPointerSize() + meta.Offset;
-			var mem = _owningHeapDump.OwningProcess.ProcessMemoryManger.GetMemory(fieldContentAddress, length);
+			var mem = _owningHeapDump.MemoryDump.GetMemory(fieldContentAddress, length);
 
 			return mem;
 		}
