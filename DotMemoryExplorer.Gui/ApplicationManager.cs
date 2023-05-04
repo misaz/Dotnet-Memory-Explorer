@@ -19,6 +19,7 @@ namespace DotMemoryExplorer.Gui {
 		private readonly SearchStringCommand _searchStringCommand;
 		private readonly SearchBinaryCommand _searchBinaryCommand;
 		private readonly LabelManager _labelManager;
+		private List<Tab> _recentlyToggledTabs = new List<Tab>();
 
 		public StartProcessCommand StartProcessCommand {
 			get {
@@ -71,9 +72,8 @@ namespace DotMemoryExplorer.Gui {
 
 					if (value != null) {
 						ThrowIfNotOwnedTab(value);
+						_recentlyToggledTabs.Add(value);
 					}
-
-					// TODO: Store tab selection history for activating recent tabs when closing current tab.
 
 					_selectedTab = value;
 					RaisePropertyChanged(nameof(SelectedTab));
@@ -107,17 +107,27 @@ namespace DotMemoryExplorer.Gui {
 			}
 		}
 
-		public void CloseTab(Tab selectedTab) {
-			if (selectedTab == null) {
-				throw new ArgumentNullException(nameof(selectedTab));
+		public void CloseTab(Tab tab) {
+			if (tab == null) {
+				throw new ArgumentNullException(nameof(tab));
 			}
 
-			ThrowIfNotOwnedTab(selectedTab);
+			ThrowIfNotOwnedTab(tab);
 
-			_tabs.Remove(selectedTab);
+			for (int i = _recentlyToggledTabs.Count - 1; i >= 0 ; i--) {
+				if (_recentlyToggledTabs[i] == tab) {
+					_recentlyToggledTabs.RemoveAt(i);
+				}
+			}
+
+			_tabs.Remove(tab);
 			RaisePropertyChanged(nameof(Tabs));
 
-			SelectedTab = _tabs.FirstOrDefault();
+			if (_recentlyToggledTabs.Count > 0) {
+				SelectedTab = _recentlyToggledTabs.Last();
+			} else {
+				SelectedTab = _tabs.FirstOrDefault();
+			}
 		}
 
 		internal void AddTab(Tab tab, bool autoSelect = true) {
@@ -130,7 +140,7 @@ namespace DotMemoryExplorer.Gui {
 			}
 
 			_tabs.Add(tab);
-			
+
 			RaisePropertyChanged(nameof(Tabs));
 
 			if (autoSelect) {
