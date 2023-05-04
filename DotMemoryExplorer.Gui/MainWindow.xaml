@@ -16,8 +16,7 @@
             </MenuItem>
             <MenuItem Header="Search">
                 <MenuItem Header="Search String" Command="{Binding SearchStringCommand}"></MenuItem>
-                <MenuItem Header="Search Binary Data"></MenuItem>
-                <MenuItem Header="Search Numerics"></MenuItem>
+                <MenuItem Header="Search Binary Data" Command="{Binding SearchBinaryCommand}"></MenuItem>
             </MenuItem>
         </Menu>
         <TabControl ItemsSource="{Binding Tabs}" SelectedItem="{Binding SelectedTab, Mode=TwoWay}">

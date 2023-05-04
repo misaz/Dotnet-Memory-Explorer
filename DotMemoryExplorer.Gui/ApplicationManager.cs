@@ -17,6 +17,7 @@ namespace DotMemoryExplorer.Gui {
 		private readonly AttachToProcessCommand _attachToProcessCommand;
 		private readonly CloseActiveTabCommand _closeTabCommand;
 		private readonly SearchStringCommand _searchStringCommand;
+		private readonly SearchBinaryCommand _searchBinaryCommand;
 		private readonly LabelManager _labelManager;
 
 		public StartProcessCommand StartProcessCommand {
@@ -46,6 +47,12 @@ namespace DotMemoryExplorer.Gui {
 		public SearchStringCommand SearchStringCommand {
 			get {
 				return _searchStringCommand;
+			}
+		}
+
+		public SearchBinaryCommand SearchBinaryCommand {
+			get {
+				return _searchBinaryCommand;
 			}
 		}
 
@@ -81,6 +88,7 @@ namespace DotMemoryExplorer.Gui {
 			_attachToProcessCommand = new AttachToProcessCommand(this);
 			_closeTabCommand = new CloseActiveTabCommand(this);
 			_searchStringCommand = new SearchStringCommand(this);
+			_searchBinaryCommand = new SearchBinaryCommand(this);
 			_selectedTab = null;
 			_labelManager = new LabelManager();
 

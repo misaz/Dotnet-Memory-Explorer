@@ -39,16 +39,18 @@
                 </StackPanel>
             </Grid>
             <TextBlock Grid.Row="1" Margin="0,0,10,0">Address:</TextBlock>
-            <TextBlock Grid.Row="2" Margin="0,0,10,0">Object Header:</TextBlock>
-            <TextBlock Grid.Row="3" Margin="0,0,10,0">Mathod Table address:</TextBlock>
-            <TextBlock Grid.Row="4" Margin="0,0,10,0">EE Class:</TextBlock>
-            <TextBlock Grid.Row="5" Margin="0,0,10,0">Data Type Name:</TextBlock>
+            <TextBlock Grid.Row="2" Margin="0,0,10,0">Size</TextBlock>
+            <TextBlock Grid.Row="3" Margin="0,0,10,0">Object Header:</TextBlock>
+            <TextBlock Grid.Row="4" Margin="0,0,10,0">Mathod Table address:</TextBlock>
+            <TextBlock Grid.Row="5" Margin="0,0,10,0">EE Class:</TextBlock>
+            <TextBlock Grid.Row="6" Margin="0,0,10,0">Data Type Name:</TextBlock>
 
-            <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Object.ObjectMetadata.Address,Converter={StaticResource hexadecimalAddressConverter}}" />
-            <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding Object.ObjectHeader,Converter={StaticResource hexadecimalAddressConverter}}" />
-            <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding Object.MethodTableAddress,Converter={StaticResource hexadecimalAddressConverter}}" />
-            <TextBlock Grid.Column="1" Grid.Row="4" Text="{Binding Object.EEClassAddress ,Converter={StaticResource hexadecimalAddressConverter}}" />
-            <TextBlock Grid.Column="1" Grid.Row="5" Text="{Binding Object.DataTypeName}" />
+            <TextBox Grid.Column="1" Grid.Row="1" IsReadOnly="True" Width="130" HorizontalAlignment="Left"  Text="{Binding Object.ObjectMetadata.Address,Converter={StaticResource hexadecimalAddressConverter}, Mode=OneWay}" />
+            <TextBox Grid.Column="1" Grid.Row="2" IsReadOnly="True" Width="130" HorizontalAlignment="Left" Text="{Binding Object.ObjectMetadata.Size, Mode=OneWay}" />
+            <TextBox Grid.Column="1" Grid.Row="3" IsReadOnly="True" Width="130" HorizontalAlignment="Left" Text="{Binding Object.ObjectHeader,Converter={StaticResource hexadecimalAddressConverter}, Mode=OneWay}" />
+            <TextBox Grid.Column="1" Grid.Row="4" IsReadOnly="True" Width="130" HorizontalAlignment="Left" Text="{Binding Object.MethodTableAddress,Converter={StaticResource hexadecimalAddressConverter}, Mode=OneWay}" />
+            <TextBox Grid.Column="1" Grid.Row="5" IsReadOnly="True" Width="130" HorizontalAlignment="Left" Text="{Binding Object.EEClassAddress ,Converter={StaticResource hexadecimalAddressConverter}, Mode=OneWay}" />
+            <TextBox Grid.Column="1" Grid.Row="6" IsReadOnly="True" Text="{Binding Object.DataTypeName, Mode=OneWay}" />
         </Grid>
         <TabControl Grid.Row="1" Margin="10,0,10,10">
             <TabItem Header="Content">
@@ -79,7 +81,7 @@
                 </DataGrid>
             </TabItem>
             <TabItem Header="Binary content">
-                <TextBox FontFamily="Consolas" TextWrapping="Wrap" IsReadOnly="True" Text="{Binding Object.BinaryContentFormatted, Mode=OneWay}" />
+                <TextBox FontFamily="Consolas" TextWrapping="Wrap" IsReadOnly="True" Text="{Binding Object.BinaryContentFormatted, Mode=OneWay}" VerticalScrollBarVisibility="Auto" />
             </TabItem>
             <TabItem Header="References" x:Name="tabReferences"></TabItem>
             <TabItem Header="Referenced by" x:Name="tabReferencedBy"></TabItem>

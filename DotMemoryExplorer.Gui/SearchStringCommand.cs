@@ -7,44 +7,13 @@ using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace DotMemoryExplorer.Gui {
-	public class SearchStringCommand : ICommand {
+	public class SearchStringCommand : SearchCommand {
 
-		private readonly ApplicationManager _applicationManager;
-
-		public SearchStringCommand(ApplicationManager applicationManager) {
-			if (applicationManager == null) {
-				throw new ArgumentNullException(nameof(applicationManager));
-			}
-
-			_applicationManager = applicationManager;
-
-			_applicationManager.PropertyChanged += ApplicationManager_PropertyChanged;
+		public SearchStringCommand(ApplicationManager applicationManager) : base(applicationManager) {
 		}
 
-		private void ApplicationManager_PropertyChanged(object? sender, PropertyChangedEventArgs e) {
-			if (e.PropertyName == nameof(ApplicationManager.SelectedTab)) {
-				RaiseCanExecuteChanged();
-			}
-		}
-
-		private void RaiseCanExecuteChanged() {
-			if (CanExecuteChanged != null) {
-				CanExecuteChanged(this, EventArgs.Empty);
-			}
-		}
-
-		public event EventHandler? CanExecuteChanged;
-
-		public bool CanExecute(object? parameter) {
-			return _applicationManager.SelectedTab is HeapDumpTab;
-		}
-
-		public void Execute(object? parameter) {
-			if (_applicationManager.SelectedTab is not HeapDumpTab) {
-				throw new InvalidOperationException("Unable to search dump when non-dump tab is selected.");
-			}
-
-			HeapDumpTab heapDumpTab = (HeapDumpTab)_applicationManager.SelectedTab;
+		public override void Execute(object? parameter) {
+			HeapDumpTab heapDumpTab = GetHeapDumpTab(); 
 
 			var dlg = new SearchStringWindow();
 			if (dlg.ShowDialog() == true && dlg.Request != null) {
@@ -53,5 +22,6 @@ namespace DotMemoryExplorer.Gui {
 				_applicationManager.AddTab(searchResultsTab);
 			}
 		}
+
 	}
 }

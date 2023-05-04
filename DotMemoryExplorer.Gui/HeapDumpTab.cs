@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace DotMemoryExplorer.Gui {
-	internal class HeapDumpTab : Tab {
+	public class HeapDumpTab : Tab {
 		public HeapDump HeapDump { get; }
 
 		public HeapDumpTab(int dumpNumber, HeapDump heapDump, ApplicationManager appManager) : base($"Dump #{dumpNumber} of {heapDump.OwningProcess.ToString()}", new HeapDumpPane(heapDump, appManager), true) {
