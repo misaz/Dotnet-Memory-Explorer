@@ -9,4 +9,7 @@
 /DotMemoryExplorer.DebugeeWpf/bin
 /DotMemoryExplorer.DebugeeWpf/obj
 
+/DotMemoryExplorer.DebugeeConsole/bin
+/DotMemoryExplorer.DebugeeConsole/obj
+
 *.user
