@@ -59,9 +59,6 @@ namespace DotMemoryExplorer.Core {
 		private void SetupClient() {
 			var runtimeEventProvider = new EventPipeProvider(EventProviderId, EventLevel.Verbose, (long)ClrTraceEventParser.Keywords.GCHeapSnapshot);
 
-			List<EventPipeProvider> providers = new List<EventPipeProvider>();
-			providers.Add(runtimeEventProvider);
-
 			_diagnosticsClient = new DiagnosticsClient(_targetProcess.Pid);
 			_eventSession = _diagnosticsClient.StartEventPipeSession(runtimeEventProvider, true);
 			_eventSource = new EventPipeEventSource(_eventSession.EventStream);
