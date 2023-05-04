@@ -27,7 +27,7 @@ void AddObject() {
 
 while (true) {
 	Console.WriteLine("==================");
-	Console.WriteLine("Enter command ((p)rint/(a)dde/(c)lose):");
+	Console.WriteLine("Enter command ((p)rint/(a)dd/(c)lose):");
 
 	char command = Console.ReadKey().KeyChar;
 
