@@ -103,5 +103,36 @@ namespace DotMemoryExplorer.Gui {
 				_appManager.LabelManager.SetObjectLabel(Object.ObjectMetadata, dlg.Label);
 			}
 		}
+
+		private void ChangeValue_Click(object sender, RoutedEventArgs e) {
+			FieldGuiWrapper wrapper = GuiEventsHelper.UnpackSenderTag<FieldGuiWrapper>(sender);
+
+			if (wrapper.FieldMetadata.Content is FieldValueClass) {
+				FieldValueClass fvc = (FieldValueClass)wrapper.FieldMetadata.Content;
+				var objSelector = new ObjectSelector(fvc.ReferencedObjectType.TypeId, _owningHeapDump, _appManager);
+				if (objSelector.ShowDialog() == true && objSelector.SelectedObject != null) {
+					byte[] patchedMemoryContent;
+					if (_owningHeapDump.OwningProcess.Bitness == 64) {
+						patchedMemoryContent = BitConverter.GetBytes(objSelector.SelectedObject.ObjectMetadata.Address);
+					} else {
+						patchedMemoryContent = BitConverter.GetBytes((uint)objSelector.SelectedObject.ObjectMetadata.Address);
+					}
+
+					try {
+						ulong compareAddress = Object.ObjectMetadata.Address;
+						ReadOnlySpan<byte> compareMemory = Object.ObjectMemoryContent;
+						ulong writeAddress = Object.GetFieldContentAddress(wrapper.FieldMetadata);
+						byte[] writeMemory = patchedMemoryContent;
+
+						_owningHeapDump.PatchMemory(compareAddress, compareMemory, writeAddress, writeMemory);
+					} catch (ComparisonFailedException) {
+						MessageBox.Show($"Object was relocated since the heap dump was created and is no more patchable at it's original address.", "Patch error", MessageBoxButton.OK, MessageBoxImage.Error);
+					} catch (Exception ex) {
+						MessageBox.Show($"Error while patching memory. Details:\n\n{ex.GetType().Name}: {ex.Message}", "Patch error", MessageBoxButton.OK, MessageBoxImage.Error);
+					}
+				}
+			}
+
+		}
     }
 }

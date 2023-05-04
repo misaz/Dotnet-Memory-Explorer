@@ -1,3 +1,4 @@
 VirtualQueryEx
 ReadProcessMemory
+WriteProcessMemory
 IsWow64Process

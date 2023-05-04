@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace DotMemoryExplorer.Gui {
 	public class ObjectGuiWrapper : INotifyPropertyChanged, IDisposable {
-
 		private Lazy<string> _objectBinaryContentLazy;
 		private Lazy<ulong> _eeClassAddressLazy;
 		private Lazy<ulong> _objectHeaderLazy;
-		private Lazy<IEnumerable<FieldGuiWrapper>> _objectFieldsLazy;
+		private byte[]? _objectMemoryContent = null;
+		private IEnumerable<FieldGuiWrapper>? _objectFields = null;
 
 		private ObjectDetailProvider _objectDetailProvider;
 		private DotnetObjectMetadata _objectMetadata;
@@ -76,7 +76,19 @@ namespace DotMemoryExplorer.Gui {
 
 		public IEnumerable<FieldGuiWrapper> Fields {
 			get {
-				return _objectFieldsLazy.Value;
+				if (_objectFields == null) {
+					_objectFields = ReadObjectFields();
+				}
+				return _objectFields;
+			}
+		}
+
+		public ReadOnlySpan<byte> ObjectMemoryContent {
+			get {
+				if (_objectMemoryContent == null) {
+					_objectMemoryContent = ReadObjectMemoryContent();
+				}
+				return _objectMemoryContent;
 			}
 		}
 
@@ -89,10 +101,17 @@ namespace DotMemoryExplorer.Gui {
 			_objectBinaryContentLazy = new Lazy<string>(FormatBinaryContent);
 			_eeClassAddressLazy = new Lazy<ulong>(ReadEEClassAddress);
 			_objectHeaderLazy = new Lazy<ulong>(ReadObjectHeader);
-			_objectFieldsLazy = new Lazy<IEnumerable<FieldGuiWrapper>>(ReadObjectFields);
 
 			_appManager.LabelManager.ObjectLabelChanged += LabelManager_ObjectLabelChanged;
 			_appManager.LabelManager.DataTypeLabelChanged += LabelManager_DataTypeLabelChanged;
+			_owningHeapDump.MemoryDump.MemoryPatched += MemoryDump_MemoryPatched;
+		}
+
+		private void MemoryDump_MemoryPatched(object? sender, MemoryPatchedEventArgs e) {
+			_objectMemoryContent = null;
+			_objectFields = null;
+			RaisePropertyChanged(nameof(Fields));
+			RaisePropertyChanged(nameof(ObjectMemoryContent));
 		}
 
 		private IEnumerable<FieldGuiWrapper> ReadObjectFields() {
@@ -109,6 +128,10 @@ namespace DotMemoryExplorer.Gui {
 
 		private ulong ReadObjectHeader() {
 			return _objectDetailProvider.GetObjectHeader();
+		}
+
+		private byte[] ReadObjectMemoryContent() {
+			return _owningHeapDump.MemoryDump.GetMemory(ObjectMetadata.Address, ObjectMetadata.Size).ToArray();
 		}
 
 		private void LabelManager_ObjectLabelChanged(object? sender, ObjectLabelChangedEventArgs e) {
@@ -133,8 +156,7 @@ namespace DotMemoryExplorer.Gui {
 		}
 
 		private string BuildBinaryContentFormatted() {
-			var mem = _owningHeapDump.MemoryDump.GetMemory(ObjectMetadata.Address, ObjectMetadata.Size);
-			return BinaryDataFormatter.FormatBinary(mem);
+			return BinaryDataFormatter.FormatBinary(ObjectMemoryContent);
 		}
 
 		private void RaisePropertyChanged(string propertyName) {
@@ -147,6 +169,10 @@ namespace DotMemoryExplorer.Gui {
 
 		public void Dispose() {
 			_appManager.LabelManager.ObjectLabelChanged -= LabelManager_ObjectLabelChanged;
+		}
+
+		public ulong GetFieldContentAddress(FieldMetadata fieldMetadata) {
+			return ObjectMetadata.Address + 8 + fieldMetadata.Offset;
 		}
 	}
 }

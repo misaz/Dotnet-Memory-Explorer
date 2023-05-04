@@ -9,6 +9,8 @@ namespace DotMemoryExplorer.Core {
 
 		private SortedDictionary<ulong, MemoryRegion> _regions = new SortedDictionary<ulong, MemoryRegion>();
 
+		public event EventHandler<MemoryPatchedEventArgs>? MemoryPatched;
+
 		public IEnumerable<MemoryRegion> Regions {
 			get {
 				return _regions.Values;
@@ -49,5 +51,15 @@ namespace DotMemoryExplorer.Core {
 			throw new ArgumentOutOfRangeException("Specified memory is not avalaible in the dump.");
 		}
 
+		internal void PatchMemory(ulong writeAddress, ReadOnlySpan<byte> writeMemory) {
+			foreach (var reg in Regions) {
+				if (reg.ContainsAddres(writeAddress)) {
+					reg.PatchMemory(writeAddress, writeMemory);
+					if (MemoryPatched != null) {
+						MemoryPatched(this, new MemoryPatchedEventArgs(writeAddress, (ulong)writeMemory.Length));
+					}
+				}
+			}
+		}
 	}
 }

@@ -112,13 +112,7 @@ namespace DotMemoryExplorer.Core {
 		}
 
 		private ReadOnlySpan<byte> ReadFieldMemory(FieldMetadata meta, ulong length) {
-			// field content is located at offset which do not incluide size of pointer to
-			// MethodTable which is at the begining of every field.
-
-			ulong fieldContentAddress = _object.Address + GetPointerSize() + meta.Offset;
-			var mem = _owningHeapDump.MemoryDump.GetMemory(fieldContentAddress, length);
-
-			return mem;
+			return _owningHeapDump.MemoryDump.GetMemory(GetFieldContentAddress(meta), length);
 		}
 
 		private IEnumerable<FieldMetadata> GetFieldsForMethodTable(ulong methodTablePointer) {
@@ -142,16 +136,16 @@ namespace DotMemoryExplorer.Core {
 				ulong fieldMetadata = ReadLiveMemory64(fieldsArrayPointer);
 				fieldsArrayPointer += 8;
 
-				if (fieldOwningClassMethodTable == _object.TypeId) {
-					uint fieldMetadata1 = (uint)(fieldMetadata & 0xFFFFFFFF);
-					uint fieldMetadata2 = (uint)((fieldMetadata & 0xFFFFFFFF00000000) >> 32);
+				uint fieldMetadata1 = (uint)(fieldMetadata & 0xFFFFFFFF);
+				uint fieldMetadata2 = (uint)((fieldMetadata & 0xFFFFFFFF00000000) >> 32);
 
-					ulong mb = 0x04000000 | fieldMetadata1 & 0xFFFFFF;
-					ulong isStatic = fieldMetadata1 & (1 << 24);
+				ulong mb = 0x04000000 | fieldMetadata1 & 0xFFFFFF;
+				ulong isStatic = fieldMetadata1 & (1 << 24);
 
-					ulong offset = (fieldMetadata2 & 0x7FFFFFF);
-					ulong type = fieldMetadata2 >> 27;
+				ulong offset = (fieldMetadata2 & 0x7FFFFFF);
+				ulong type = fieldMetadata2 >> 27;
 
+				if (fieldOwningClassMethodTable == _object.TypeId && offset < _object.Size && isStatic == 0) {
 					FieldId fId = new FieldId(methodTablePointer, mb);
 					FieldMetadata metaWithoutContent = new FieldMetadata(fId, offset, isStatic, type, index, null);
 					FieldContent content = ParseFieldValue(metaWithoutContent);
@@ -176,7 +170,7 @@ namespace DotMemoryExplorer.Core {
 				case CorElementType.ELEMENT_TYPE_U1:
 					return new FieldValueUint8(ReadFieldMemory(meta, 1)[0]);
 				case CorElementType.ELEMENT_TYPE_I2:
-					return new FieldValueInt16(BitConverter.ToInt16( ReadFieldMemory(meta, 2)));
+					return new FieldValueInt16(BitConverter.ToInt16(ReadFieldMemory(meta, 2)));
 				case CorElementType.ELEMENT_TYPE_U2:
 					return new FieldValueUInt16(BitConverter.ToUInt16(ReadFieldMemory(meta, 2)));
 				case CorElementType.ELEMENT_TYPE_I4:
@@ -229,6 +223,13 @@ namespace DotMemoryExplorer.Core {
 			}
 
 			return fields.AsReadOnly();
+		}
+
+		public ulong GetFieldContentAddress(FieldMetadata meta) {
+			// field content is located at offset which do not incluide size of pointer to
+			// MethodTable which is at the begining of every field.
+
+			return _object.Address + GetPointerSize() + meta.Offset;
 		}
 
 		private Stack<ulong> GetInheritanceStack() {

@@ -138,5 +138,10 @@ namespace DotMemoryExplorer.Core {
 
 			return true;
 		}
+
+		public void PatchMemory(ulong compareAddress, ReadOnlySpan<byte> compareMemory, ulong writeAddress, ReadOnlySpan<byte> writeMemory) {
+			OwningProcess.ProcessMemoryManger.PatchMemory(compareAddress, compareMemory, writeAddress, writeMemory);
+			MemoryDump.PatchMemory(writeAddress, writeMemory);
+		}
 	}
 }

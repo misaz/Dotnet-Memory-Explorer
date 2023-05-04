@@ -118,5 +118,21 @@ namespace DotMemoryExplorer.Core {
 		public bool ContainsAddres(ulong address) {
 			return address >= Address && address < AddressEnd;
 		}
+
+		public void PatchMemory(ulong absoluteAddress, ReadOnlySpan<byte> writeMemory) {
+			if (absoluteAddress < Address || absoluteAddress + (ulong)writeMemory.Length > AddressEnd) {
+				throw new ArgumentOutOfRangeException("Unable to patch memory because it is not inside current region");
+			}
+
+			if (absoluteAddress - Address > int.MaxValue) {
+				throw new Exception("Unable to patch memory because address offset is too high.");
+			}
+
+			int offset = (int)(absoluteAddress - Address);
+
+			for (int i = 0; i < writeMemory.Length; i++) {
+				_content[offset + i] = writeMemory[i];
+			}
+		}
 	}
 }

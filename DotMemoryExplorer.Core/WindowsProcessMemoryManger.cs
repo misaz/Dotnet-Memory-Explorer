@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Diagnostics.Tracing.Parsers.FrameworkEventSource;
+using Microsoft.Diagnostics.Tracing.Parsers.MicrosoftAntimalwareAMFilter;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -13,12 +15,6 @@ namespace DotMemoryExplorer.Core {
 	public class WindowsProcessMemoryManger : IMemoryDumper, IProcessMemoryManger {
 
 		private readonly Process _proc;
-
-		[DllImport("ntdll.dll", PreserveSig = false)]
-		public static extern void NtSuspendProcess(IntPtr processHandle);
-
-		[DllImport("ntdll.dll", PreserveSig = false, SetLastError = true)]
-		public static extern void NtResumeProcess(IntPtr processHandle);
 
 		public WindowsProcessMemoryManger(Process proc) {
 			if (proc == null) {
@@ -87,34 +83,32 @@ namespace DotMemoryExplorer.Core {
 		}
 
 		public unsafe MemoryDump MakeMemoryDump() {
-			NtSuspendProcess(_proc.Handle);
-
 			SafeHandle p = _proc.SafeHandle;
 
-			IEnumerable<MemoryAddressRange> regionsAddresses = GetMemoryRegions();
-			List<MemoryRegion> regions = new List<MemoryRegion>(regionsAddresses.Count());
+			using (var suspendBlock = new NtSuspendBlock(_proc)) {
+				IEnumerable<MemoryAddressRange> regionsAddresses = GetMemoryRegions();
+				List<MemoryRegion> regions = new List<MemoryRegion>(regionsAddresses.Count());
 
 
-			foreach (var region in regionsAddresses) {
-				// dump only private commited memory
-				if (region.Type != WindowsMemoryType.Private || region.State != WindowsMemoryState.Commit) {
-					continue;
+				foreach (var region in regionsAddresses) {
+					// dump only private commited memory
+					if (region.Type != WindowsMemoryType.Private || region.State != WindowsMemoryState.Commit) {
+						continue;
+					}
+
+					AssureUnmanagedBufferCapacity((nuint)region.Size);
+
+					nuint read;
+					PInvoke.ReadProcessMemory(p, (void*)region.Address, (void*)buffer, (nuint)region.Size, &read);
+
+					byte[] managedBuffer = new byte[region.Size];
+					Marshal.Copy(buffer, managedBuffer, 0, (int)region.Size);
+
+					regions.Add(new MemoryRegion((ulong)region.Address, managedBuffer));
 				}
 
-				AssureUnmanagedBufferCapacity((nuint)region.Size);
-
-				nuint read;
-				PInvoke.ReadProcessMemory(p, (void*)region.Address, (void*)buffer, (nuint)region.Size, &read);
-
-				byte[] managedBuffer = new byte[region.Size];
-				Marshal.Copy(buffer, managedBuffer, 0, (int)region.Size);
-
-				regions.Add(new MemoryRegion((ulong)region.Address, managedBuffer));
+				return new MemoryDump(regions);
 			}
-
-			NtResumeProcess(_proc.Handle);
-
-			return new MemoryDump(regions);
 		}
 
 
@@ -142,6 +136,38 @@ namespace DotMemoryExplorer.Core {
 				Marshal.FreeHGlobal(buffer);
 				buffer = 0;
 				bufferSize = 0;
+			}
+		}
+
+		public unsafe void PatchMemory(ulong compareAddress, ReadOnlySpan<byte> compareMemory, ulong writeAddress, ReadOnlySpan<byte> writeMemory) {
+			Windows.Win32.Foundation.BOOL status;
+			SafeHandle p = _proc.SafeHandle;
+
+			using (var suspendBlock = new NtSuspendBlock(_proc)) {
+				AssureUnmanagedBufferCapacity((nuint)compareMemory.Length);
+
+				nuint read;
+				status = PInvoke.ReadProcessMemory(p, (void*)compareAddress, (void*)buffer, (nuint)compareMemory.Length, &read);
+				if (status == false || read != (nuint)compareMemory.Length) {
+					throw new Exception("ReadProcessMemory failed to read requested amount of memory.");
+				}
+				byte[] managedBuffer = new byte[compareMemory.Length];
+				Marshal.Copy(buffer, managedBuffer, 0, (int)compareMemory.Length);
+
+				if (!compareMemory.SequenceEqual(new ReadOnlySpan<byte>(managedBuffer))) {
+					throw new ComparisonFailedException();
+					throw new Exception("Unable to patch memory because object changed it's location or content since dump was collected");
+				}
+
+				AssureUnmanagedBufferCapacity((nuint)writeMemory.Length);
+
+				Marshal.Copy(writeMemory.ToArray(), 0, buffer, writeMemory.Length);
+
+				nuint written;
+				status = PInvoke.WriteProcessMemory(p, (void*)writeAddress, (void*)buffer, (nuint)writeMemory.Length, &written);
+				if (status == false || written != (nuint)writeMemory.Length) {
+					throw new Exception("WriteProcessMemory failed to write requested amount of memory.");
+				}
 			}
 		}
 	}
