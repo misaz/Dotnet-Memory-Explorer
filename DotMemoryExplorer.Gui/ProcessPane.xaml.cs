@@ -50,7 +50,13 @@ namespace DotMemoryExplorer.Gui {
 		}
 
 		private void DumpHeap_Click(object sender, RoutedEventArgs e) {
-			var dump = _process.MakeDump();
+			HeapDump dump;
+			try {
+				dump = _process.MakeDump();
+			} catch (Exception ex) {
+				MessageBox.Show($"Error while making dump. Details: \n\n{ex.GetType().Name}: {ex.Message}", "Dumping failed", MessageBoxButton.OK, MessageBoxImage.Error);
+				return;
+			}
 			_appManager.AddTab(new HeapDumpTab(_process.AvalaibleDumps.Count(), dump, _appManager));
 		}
 	}
