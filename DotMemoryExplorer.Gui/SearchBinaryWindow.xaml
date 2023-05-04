@@ -26,7 +26,7 @@
         </Grid>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="2">
             <Button Margin="0,15,15,0" Width="80" IsCancel="True" Click="Cancel_Click">Cancel</Button>
-            <Button Margin="0,15,15,0" Width="80" IsDefault="True" Click="Search_Click" IsEnabled="{Binding SearchEnabled}">Search</Button>
+            <Button Margin="0,15,15,0" Width="80" Click="Search_Click" IsEnabled="{Binding SearchEnabled}">Search</Button>
         </StackPanel>
     </Grid>
 </Window>

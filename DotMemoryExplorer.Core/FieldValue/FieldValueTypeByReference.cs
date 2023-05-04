@@ -1,12 +1,9 @@
-﻿namespace DotMemoryExplorer.Core.FieldValue
-{
-    internal class FieldValueTypeByReference : FieldContent
-    {
-        private ulong v;
+﻿namespace DotMemoryExplorer.Core.FieldValue {
+	public class FieldValueTypeByReference : FieldContent {
+		public ulong Value { get; }
 
-        public FieldValueTypeByReference(ulong v)
-        {
-            this.v = v;
-        }
-    }
+		public FieldValueTypeByReference(ulong value) {
+			this.Value = value;
+		}
+	}
 }

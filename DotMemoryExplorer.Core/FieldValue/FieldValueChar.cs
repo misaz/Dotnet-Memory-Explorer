@@ -8,5 +8,19 @@
 		public override string ToString() {
 			return Value.ToString();
 		}
+
+		public bool IsValid(string valueString) {
+			char dummy;
+			return char.TryParse(valueString, out dummy);
+		}
+
+		public byte[] GetValueBytes(string valueString) {
+			return BitConverter.GetBytes(char.Parse(valueString));
+		}
+
+		public string BuildValueString() {
+			return ToString();
+		}
+
 	}
 }

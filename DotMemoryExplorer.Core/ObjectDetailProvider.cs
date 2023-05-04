@@ -168,7 +168,7 @@ namespace DotMemoryExplorer.Core {
 				case CorElementType.ELEMENT_TYPE_I1:
 					return new FieldValueInt8(unchecked((sbyte)ReadFieldMemory(meta, 1)[0]));
 				case CorElementType.ELEMENT_TYPE_U1:
-					return new FieldValueUint8(ReadFieldMemory(meta, 1)[0]);
+					return new FieldValueUInt8(ReadFieldMemory(meta, 1)[0]);
 				case CorElementType.ELEMENT_TYPE_I2:
 					return new FieldValueInt16(BitConverter.ToInt16(ReadFieldMemory(meta, 2)));
 				case CorElementType.ELEMENT_TYPE_U2:
@@ -203,9 +203,9 @@ namespace DotMemoryExplorer.Core {
 				case CorElementType.ELEMENT_TYPE_TYPEDBYREF:
 					return new FieldValueTypeByReference(MemoryToPointer(ReadFieldMemory(meta, GetPointerSize())));
 				case CorElementType.ELEMENT_TYPE_I:
-					return new FieldValueNativeInt(MemoryToNativeInt(ReadFieldMemory(meta, GetPointerSize())));
+					return new FieldValueNativeInt(MemoryToNativeInt(ReadFieldMemory(meta, GetPointerSize())), GetPointerSize());
 				case CorElementType.ELEMENT_TYPE_U:
-					return new FieldValueNativeUint(MemoryToNativeUInt(ReadFieldMemory(meta, GetPointerSize())));
+					return new FieldValueNativeUInt(MemoryToNativeUInt(ReadFieldMemory(meta, GetPointerSize())), GetPointerSize());
 				case CorElementType.ELEMENT_TYPE_FNPTR:
 					return new FieldValueFunctionPointer(MemoryToNativeUInt(ReadFieldMemory(meta, GetPointerSize())));
 				default:

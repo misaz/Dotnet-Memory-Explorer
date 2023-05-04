@@ -1,12 +1,9 @@
-﻿namespace DotMemoryExplorer.Core.FieldValue
-{
-    internal class FieldValuePointer : FieldContent
-    {
-        private ulong v;
+﻿namespace DotMemoryExplorer.Core.FieldValue {
+	public class FieldValuePointer : FieldContent {
+		public ulong Value { get; }
 
-        public FieldValuePointer(ulong v)
-        {
-            this.v = v;
-        }
-    }
+		public FieldValuePointer(ulong value) {
+			this.Value = value;
+		}
+	}
 }

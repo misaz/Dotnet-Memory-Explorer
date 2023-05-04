@@ -108,31 +108,56 @@ namespace DotMemoryExplorer.Gui {
 			FieldGuiWrapper wrapper = GuiEventsHelper.UnpackSenderTag<FieldGuiWrapper>(sender);
 
 			if (wrapper.FieldMetadata.Content is FieldValueClass) {
-				FieldValueClass fvc = (FieldValueClass)wrapper.FieldMetadata.Content;
-				var objSelector = new ObjectSelector(fvc.ReferencedObjectType.TypeId, _owningHeapDump, _appManager);
-				if (objSelector.ShowDialog() == true && objSelector.SelectedObject != null) {
-					byte[] patchedMemoryContent;
-					if (_owningHeapDump.OwningProcess.Bitness == 64) {
-						patchedMemoryContent = BitConverter.GetBytes(objSelector.SelectedObject.ObjectMetadata.Address);
-					} else {
-						patchedMemoryContent = BitConverter.GetBytes((uint)objSelector.SelectedObject.ObjectMetadata.Address);
-					}
-
-					try {
-						ulong compareAddress = Object.ObjectMetadata.Address;
-						ReadOnlySpan<byte> compareMemory = Object.ObjectMemoryContent;
-						ulong writeAddress = Object.GetFieldContentAddress(wrapper.FieldMetadata);
-						byte[] writeMemory = patchedMemoryContent;
-
-						_owningHeapDump.PatchMemory(compareAddress, compareMemory, writeAddress, writeMemory);
-					} catch (ComparisonFailedException) {
-						MessageBox.Show($"Object was relocated since the heap dump was created and is no more patchable at it's original address.", "Patch error", MessageBoxButton.OK, MessageBoxImage.Error);
-					} catch (Exception ex) {
-						MessageBox.Show($"Error while patching memory. Details:\n\n{ex.GetType().Name}: {ex.Message}", "Patch error", MessageBoxButton.OK, MessageBoxImage.Error);
-					}
-				}
+				FieldValueClass value = (FieldValueClass)wrapper.FieldMetadata.Content;
+				UpdateReferenceField(wrapper.FieldMetadata, value);
+			} else if (wrapper.FieldMetadata.Content is IEditableFieldValue) {
+				IEditableFieldValue value = (IEditableFieldValue)wrapper.FieldMetadata.Content;
+				UpdateValueField(wrapper.FieldMetadata, value);
+			} else {
+				MessageBox.Show("Updating specified field is not supported", "Not supported", MessageBoxButton.OK, MessageBoxImage.Information);
 			}
 
 		}
-    }
+
+		private void UpdateValueField(FieldMetadata meta, IEditableFieldValue value) {
+			var dlg = new FieldValueEdit(value.BuildValueString());
+			if (dlg.ShowDialog() == true) {
+				if (value.IsValid(dlg.ValueString)) {
+					byte[] writeMemory = value.GetValueBytes(dlg.ValueString);
+					PatchFieldValue(meta, writeMemory);
+				} else {
+					MessageBox.Show("Unable to parse entered value.", "Parse error", MessageBoxButton.OK, MessageBoxImage.Error);
+				}
+			}
+		}
+
+		private void UpdateReferenceField(FieldMetadata meta, FieldValueClass fvc) {
+			var objSelector = new ObjectSelector(fvc.ReferencedObjectType.TypeId, _owningHeapDump, _appManager);
+			if (objSelector.ShowDialog() == true && objSelector.SelectedObject != null) {
+				byte[] patchedMemoryContent;
+				if (_owningHeapDump.OwningProcess.Bitness == 64) {
+					patchedMemoryContent = BitConverter.GetBytes(objSelector.SelectedObject.ObjectMetadata.Address);
+				} else {
+					patchedMemoryContent = BitConverter.GetBytes((uint)objSelector.SelectedObject.ObjectMetadata.Address);
+				}
+
+				PatchFieldValue(meta, patchedMemoryContent);
+			}
+		}
+
+		private void PatchFieldValue(FieldMetadata field, byte[] patchedMemoryContent) {
+			try {
+				ulong compareAddress = Object.ObjectMetadata.Address;
+				ReadOnlySpan<byte> compareMemory = Object.ObjectMemoryContent;
+				ulong writeAddress = Object.GetFieldContentAddress(field);
+				byte[] writeMemory = patchedMemoryContent;
+
+				_owningHeapDump.PatchMemory(compareAddress, compareMemory, writeAddress, writeMemory);
+			} catch (ComparisonFailedException) {
+				MessageBox.Show($"Object was relocated since the heap dump was created and is no more patchable at it's original address.", "Patch error", MessageBoxButton.OK, MessageBoxImage.Error);
+			} catch (Exception ex) {
+				MessageBox.Show($"Error while patching memory. Details:\n\n{ex.GetType().Name}: {ex.Message}", "Patch error", MessageBoxButton.OK, MessageBoxImage.Error);
+			}
+		}
+	}
 }

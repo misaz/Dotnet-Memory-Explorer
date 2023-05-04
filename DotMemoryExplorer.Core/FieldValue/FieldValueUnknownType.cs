@@ -1,6 +1,4 @@
-﻿namespace DotMemoryExplorer.Core.FieldValue
-{
-    internal class FieldValueUnknownType : FieldContent
-    {
-    }
+﻿namespace DotMemoryExplorer.Core.FieldValue {
+	public class FieldValueUnknownType : FieldContent {
+	}
 }
