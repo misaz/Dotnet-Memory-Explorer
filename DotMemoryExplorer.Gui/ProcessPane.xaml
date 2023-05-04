@@ -13,7 +13,7 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBlock Margin="10" FontSize="26" Grid.Row="0"><TextBlock Text="{Binding Process.Name}">Process Name</TextBlock> (PID: <TextBlock Text="{Binding Process.Pid}" />)</TextBlock>
+        <TextBlock Margin="10" FontSize="26" Grid.Row="0"><TextBlock Text="{Binding Process.Name}"></TextBlock> (PID: <TextBlock Text="{Binding Process.Pid}" />)</TextBlock>
 
         <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Left" Margin="10">
             <Button Width="80" Click="DumpHeap_Click">Dump Heap</Button>
